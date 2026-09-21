@@ -6,19 +6,7 @@
 #include "../include/Perro.h"
 #include "../include/Refugio.h"
 #include "../include/Solicitud.h"
-//Clase Animales
 
-//Clase Perro derivada de animales
-
-//Clase Gato derivada de animales
-//Clase Adoptantes
-
-//Clase Solicitud
-
-//Clase Refugio
-
-
-//Obtener valor de option
 int getOption(){
     int option;
     std :: cout << "Opcion:";

@@ -10,5 +10,12 @@ bool salud;
 bool adopcion;
 
 public:
-   // void mostrarInfo();
+   int getID() const ;
+   std:: string getNombre() const ;
+   int getEdad() const ;
+   bool getSalud() const ;
+   bool getAdopcion() const ;
+
+   //Constructor
+Animales(int unID, std::string unNombre, int unEdad, bool unSalud, bool unAdopcion);
 };
