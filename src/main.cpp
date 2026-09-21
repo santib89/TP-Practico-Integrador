@@ -60,7 +60,36 @@ option = getOption();
     case 1:
         /* code */
         break;
-    
+    case 2:
+        /* code */
+        break;
+    case 3:
+        /* code */
+        break;
+    case 4:
+        /* code */
+        break;
+    case 5:
+        /* code */
+        break;
+    case 6:
+        /* code */
+        break;
+    case 7:
+        /* code */
+        break;
+    case 8:
+        /* code */
+        break;
+    case 9:
+        /* code */
+        break;
+    case 10:
+        /* code */
+        break;
+    case 11:
+        /* code */
+        break;
     default:
     std:: cout <<"Digito Invalido\n";
         break;
