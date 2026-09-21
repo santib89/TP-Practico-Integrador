@@ -1,6 +1,11 @@
 #include <iostream>
 #include <string>
-
+#include "Adoptante.h"
+#include "Animales.h"
+#include "Gato.h"
+#include "Perro.h"
+#include "Refugio.h"
+#include "Solicitud.h"
 //Clase Animales
 
 //Clase Perro derivada de animales
