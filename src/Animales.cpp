@@ -1,4 +1,12 @@
 #include "../include/Animales.h"
+Animales::Animales(int unID, std::string unNombre, int unEdad, bool unSalud, bool unAdopcion){
+    ID= unID;
+    nombre=unNombre;
+    edad=unEdad;
+    salud=unSalud;
+    adopcion=unAdopcion;
+}
+// Getters
 int Animales::getID() const {
     return ID;
 }
@@ -14,10 +22,20 @@ bool Animales ::getSalud() const {
 bool Animales ::getAdopcion() const {
     return adopcion;
 }
-Animales::Animales(int unID, std::string unNombre, int unEdad, bool unSalud, bool unAdopcion){
-    ID= unID;
-    nombre=unNombre;
-    edad=unEdad;
-    salud=unSalud;
-    adopcion=unAdopcion;
+
+//Setters
+void Animales::setID(int unID){
+    ID = unID;
+}
+void Animales::setNombre(std:: string unNombre){
+    nombre = unNombre;
+}
+void Animales::setEdad(int unEdad){
+    edad = unEdad;
+}
+void Animales::setSalud(bool unSalud){
+    salud = unSalud;
+}
+void Animales::setAdopcion(bool unAdopcion){
+    adopcion = unAdopcion;
 }

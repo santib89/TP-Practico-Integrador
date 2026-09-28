@@ -1,10 +1,20 @@
 #pragma once
 #include "Animales.h"
 #include <string>
-class Gato: Animales
+class Gato: public Animales
 {
 private: 
-
 std:: string color;
-bool interior, exterior;
+bool esInterior;
+
+public:
+std:: string getColor() const;
+bool getEsInterior() const;
+
+//Setters
+void setColor(std:: string unColor); 
+void setEsInterior(bool unEsInterior);
+
+//constructor
+Gato(int unID, std:: string unNombre, int unEdad, bool unSalud, bool unAdopcion, std:: string unColor, bool unEsInterior);
 };
