@@ -9,5 +9,18 @@ int contacto;
 std:: string vivienda;
 
 public:
-    
+    // Getters
+    int getID() const;
+    std:: string getNombre() const;
+    int getContacto() const;
+    std:: string getVivienda() const;
+
+    // Setters
+    void setID(int unID);
+    void setNombre(std:: string unNombre);
+    void setContacto(int unContacto);
+    void setVivienda(std:: string unVivienda);
+
+    // Constructor
+    Adoptante(int unID, std:: string unNombre, int unContacto, std:: string unVivienda);
 };
