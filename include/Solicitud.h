@@ -9,6 +9,11 @@ int idAnimal;
 EstadoSolicitud estado;
 
 public:
+    // Constructores
+    Solicitud();
+    Solicitud(int unID, int unIdAdoptante, int unIdAnimal);
+    Solicitud(const Solicitud& otro);
+
     // Getters
     int getID() const;
     int getIdAdoptante() const;
@@ -20,7 +25,4 @@ public:
     void setIdAdoptante(int unIdAdoptante);
     void setIdAnimal(int unIdAnimal);
     void setEstado(EstadoSolicitud unEstado);
-
-    // Constructor 
-    Solicitud(int unID, int unIdAdoptante, int unIdAnimal);
 };

@@ -9,6 +9,11 @@ int contacto;
 std:: string vivienda;
 
 public:
+    // Constructores
+    Adoptante();
+    Adoptante(int unID, std:: string unNombre, int unContacto, std:: string unVivienda);
+    Adoptante(const Adoptante& otro);
+
     // Getters
     int getID() const;
     std:: string getNombre() const;
@@ -20,7 +25,4 @@ public:
     void setNombre(std:: string unNombre);
     void setContacto(int unContacto);
     void setVivienda(std:: string unVivienda);
-
-    // Constructor
-    Adoptante(int unID, std:: string unNombre, int unContacto, std:: string unVivienda);
 };

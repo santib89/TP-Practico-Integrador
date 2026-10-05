@@ -1,10 +1,27 @@
 #include "../include/Adoptante.h"
 
+// Constructores
+// Por defecto: un adoptante "vacio"
+Adoptante::Adoptante(){
+    ID = 0;
+    nombre = "";
+    contacto = 0;
+    vivienda = "";
+}
+
 Adoptante::Adoptante(int unID, std::string unNombre, int unContacto, std::string unVivienda){
     ID = unID;
     nombre = unNombre;
     contacto = unContacto;
     vivienda = unVivienda;
+}
+
+// De copia: copia cada atributo del adoptante original
+Adoptante::Adoptante(const Adoptante& otro){
+    ID = otro.ID;
+    nombre = otro.nombre;
+    contacto = otro.contacto;
+    vivienda = otro.vivienda;
 }
 
 // Getters

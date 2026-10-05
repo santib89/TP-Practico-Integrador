@@ -1,11 +1,28 @@
 #include "../include/Solicitud.h"
 
-// Constructor
+// Constructores
+// Por defecto: solicitud vacia, en estado Pendiente
+Solicitud::Solicitud(){
+    ID = 0;
+    idAdoptante = 0;
+    idAnimal = 0;
+    estado = EstadoSolicitud::Pendiente;
+}
+
+// Parametrizado: toda solicitud nueva arranca en estado Pendiente
 Solicitud::Solicitud(int unID, int unIdAdoptante, int unIdAnimal){
     ID = unID;
     idAdoptante = unIdAdoptante;
     idAnimal = unIdAnimal;
     estado = EstadoSolicitud::Pendiente;
+}
+
+// De copia: copia cada atributo, incluido el estado actual
+Solicitud::Solicitud(const Solicitud& otro){
+    ID = otro.ID;
+    idAdoptante = otro.idAdoptante;
+    idAnimal = otro.idAnimal;
+    estado = otro.estado;
 }
 
 // Getters

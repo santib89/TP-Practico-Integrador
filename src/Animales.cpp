@@ -6,6 +6,24 @@ Animales::Animales(int unID, std::string unNombre, int unEdad, bool unSalud, boo
     salud=unSalud;
     adopcion=unAdopcion;
 }
+Animales::Animales() {
+    ID = 0;
+    nombre = "";
+    edad = 0;
+    salud = true;
+    adopcion = false;
+}
+Animales::Animales(const Animales& otro) {
+    ID = otro.ID;
+    nombre = otro.nombre;
+    edad = otro.edad;
+    salud = otro.salud;
+    adopcion = otro.adopcion;
+}
+
+Animales::~Animales() { }
+
+
 // Getters
 int Animales::getID() const {
     return ID;
