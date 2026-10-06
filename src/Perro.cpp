@@ -1,7 +1,6 @@
 #include "../include/Perro.h"
 
 // Constructores
-// Por defecto: la parte Animales se construye sola con Animales()
 Perro::Perro() {
     raza = "";
     tamano = 0.0;
@@ -14,7 +13,6 @@ Perro::Perro(int unID, std:: string unNombre, int unEdad, bool unSalud, bool unA
     tamano = unTamano;
  }
 
-// De copia: se le pasa "otro" a Animales para copiar tambien la parte heredada
 Perro::Perro(const Perro& otro) : Animales(otro) {
     raza = otro.raza;
     tamano = otro.tamano;
