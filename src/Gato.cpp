@@ -1,4 +1,5 @@
 #include "../include/Gato.h"
+#include <iostream>
 
 // Constructores
 // Por defecto: la parte Animales se construye sola con Animales()
@@ -35,4 +36,12 @@ void Gato::setColor(std::string unColor){
 
 void Gato::setEsInterior(bool unEsInterior){
     esInterior = unEsInterior;
+}
+
+void Gato::mostrarInfo() const
+{
+    Animales::mostrarInfo();
+    std::cout << " | Tipo: Gato"
+              << " | Color: " << color
+              << " | Interior: " << (esInterior ? "Si" : "No") << "\n";
 }

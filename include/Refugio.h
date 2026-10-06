@@ -21,4 +21,8 @@ public:
     int registrarPerro(std::string unNombre, int unEdad, std::string unRaza, double unTamano);
     int registrarGato(std::string unNombre, int unEdad, std::string unColor, bool unEsInterior);
 
+    Animales* buscarAnimal(int unID) const;
+    void listarAnimales() const;
+    void listarDisponibles() const;
+
 };

@@ -1,4 +1,5 @@
 #include "../include/Perro.h"
+#include <iostream>
 
 // Constructores
 Perro::Perro() {
@@ -33,4 +34,12 @@ void Perro::setRaza(std::string unRaza) {
 
 void Perro::setTamano(double unTamano){
    tamano = unTamano;
+}
+
+void Perro::mostrarInfo() const
+{
+    Animales::mostrarInfo();
+    std::cout << " | Tipo: Perro"
+              << " | Raza: " << raza
+              << " | Tamaño: " << tamano << "\n";
 }

@@ -20,4 +20,6 @@ bool getEsInterior() const;
 // Setters
 void setColor(std:: string unColor); 
 void setEsInterior(bool unEsInterior);
+
+void mostrarInfo() const override;
 };

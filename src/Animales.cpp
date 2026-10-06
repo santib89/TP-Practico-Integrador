@@ -1,4 +1,5 @@
 #include "../include/Animales.h"
+#include <iostream>
 Animales::Animales(int unID, std::string unNombre, int unEdad, bool unSalud, bool unAdopcion){
     ID= unID;
     nombre=unNombre;
@@ -56,4 +57,13 @@ void Animales::setSalud(bool unSalud){
 }
 void Animales::setAdopcion(bool unAdopcion){
     adopcion = unAdopcion;
+}
+
+void Animales::mostrarInfo() const
+{
+    std::cout << "ID: " << ID
+              << " | Nombre: " << nombre
+              << " | Edad: " << edad
+              << " | Salud: " << (salud ? "Sano" : "Enfermo")
+              << " | Estado: " << (adopcion ? "Adoptado" : "Disponible");
 }

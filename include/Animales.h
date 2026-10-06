@@ -29,6 +29,8 @@ public:
    void setEdad(int unEdad);
    void setSalud(bool unSalud);
    void setAdopcion(bool unAdopcion);
+
+   virtual void mostrarInfo() const;
    
    
 };

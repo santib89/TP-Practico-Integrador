@@ -20,4 +20,6 @@ double getTamano() const;
 // Setters
 void setRaza(std:: string unRaza); 
 void setTamano(double unTamano);
+
+void mostrarInfo() const override;
 };
