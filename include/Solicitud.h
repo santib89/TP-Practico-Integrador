@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 enum class EstadoSolicitud { Pendiente, Confirmada, Cancelada };
 class Solicitud
 {
@@ -14,11 +15,14 @@ public:
     Solicitud(int unID, int unIdAdoptante, int unIdAnimal);
     Solicitud(const Solicitud& otro);
 
+    Solicitud& operator=(const Solicitud& otro);
+
     // Getters
     int getID() const;
     int getIdAdoptante() const;
     int getIdAnimal() const;
     EstadoSolicitud getEstado() const;
+    std::string getEstadoTexto() const;
 
     // Setters
     void setID(int unID);

@@ -2,6 +2,8 @@
 #include "Animales.h"
 #include "Perro.h"
 #include "Gato.h"
+#include "Adoptante.h"
+#include "Solicitud.h"
 
 class Refugio
 {
@@ -12,6 +14,22 @@ private:
     int proximoIdAnimal;
 
     void agrandarArreglo();
+    void guardarAnimal(Animales* nuevo);
+
+    Adoptante* adoptantes;
+    int cantidadAdoptantes;
+    int capacidadAdoptantes;
+    int proximoIdAdoptante;
+
+    void agrandarAdoptantes();
+
+    Solicitud* solicitudes;
+    int cantidadSolicitudes;
+    int capacidadSolicitudes;
+    int proximoIdSolicitud;
+
+    void agrandarSolicitudes();
+    Solicitud* buscarSolicitud(int unID) const;
 
 public:
     Refugio();
@@ -24,5 +42,14 @@ public:
     Animales* buscarAnimal(int unID) const;
     void listarAnimales() const;
     void listarDisponibles() const;
+
+    int registrarAdoptante(std::string unNombre, std::string unContacto, std::string unVivienda);
+    Adoptante* buscarAdoptante(int unID) const;
+
+    int crearSolicitud(int unIdAdoptante, int unIdAnimal);
+    int confirmarSolicitud(int unID);
+    int cancelarSolicitud(int unID);
+    int devolverAnimal(int unIdAnimal);
+    void listarSolicitudes() const;
 
 };

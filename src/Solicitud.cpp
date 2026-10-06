@@ -39,6 +39,17 @@ EstadoSolicitud Solicitud::getEstado() const {
     return estado;
 }
 
+std::string Solicitud::getEstadoTexto() const {
+    switch (estado){
+        case EstadoSolicitud::Pendiente:
+            return "Pendiente";
+        case EstadoSolicitud::Confirmada:
+            return "Confirmada";
+        default:
+            return "Cancelada";
+    }
+}
+
 // Setters
 void Solicitud::setID(int unID){
     ID = unID;
@@ -51,4 +62,14 @@ void Solicitud::setIdAnimal(int unIdAnimal){
 }
 void Solicitud::setEstado(EstadoSolicitud unEstado){
     estado = unEstado;
+}
+
+Solicitud& Solicitud::operator=(const Solicitud& otro){
+    if (this != &otro){
+        ID = otro.ID;
+        idAdoptante = otro.idAdoptante;
+        idAnimal = otro.idAnimal;
+        estado = otro.estado;
+    }
+    return *this;
 }

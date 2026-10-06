@@ -5,24 +5,26 @@ class Adoptante
 private:
 int ID;
 std:: string nombre;
-int contacto;
+std:: string contacto;
 std:: string vivienda;
 
 public:
     // Constructores
     Adoptante();
-    Adoptante(int unID, std:: string unNombre, int unContacto, std:: string unVivienda);
+    Adoptante(int unID, std:: string unNombre, std:: string unContacto, std:: string unVivienda);
     Adoptante(const Adoptante& otro);
+
+    Adoptante& operator=(const Adoptante& otro);
 
     // Getters
     int getID() const;
     std:: string getNombre() const;
-    int getContacto() const;
+    std:: string getContacto() const;
     std:: string getVivienda() const;
 
     // Setters
     void setID(int unID);
     void setNombre(std:: string unNombre);
-    void setContacto(int unContacto);
+    void setContacto(std:: string unContacto);
     void setVivienda(std:: string unVivienda);
 };

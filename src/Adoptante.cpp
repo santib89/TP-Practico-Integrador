@@ -5,11 +5,11 @@
 Adoptante::Adoptante(){
     ID = 0;
     nombre = "";
-    contacto = 0;
+    contacto = "";
     vivienda = "";
 }
 
-Adoptante::Adoptante(int unID, std::string unNombre, int unContacto, std::string unVivienda){
+Adoptante::Adoptante(int unID, std::string unNombre, std::string unContacto, std::string unVivienda){
     ID = unID;
     nombre = unNombre;
     contacto = unContacto;
@@ -31,7 +31,7 @@ int Adoptante::getID() const {
 std::string Adoptante::getNombre() const {
     return nombre;
 }
-int Adoptante::getContacto() const {
+std::string Adoptante::getContacto() const {
     return contacto;
 }
 std::string Adoptante::getVivienda() const {
@@ -45,9 +45,19 @@ void Adoptante::setID(int unID){
 void Adoptante::setNombre(std::string unNombre){
     nombre = unNombre;
 }
-void Adoptante::setContacto(int unContacto){
+void Adoptante::setContacto(std::string unContacto){
     contacto = unContacto;
 }
 void Adoptante::setVivienda(std::string unVivienda){
     vivienda = unVivienda;
+}
+
+Adoptante& Adoptante::operator=(const Adoptante& otro){
+    if (this != &otro){
+        ID = otro.ID;
+        nombre = otro.nombre;
+        contacto = otro.contacto;
+        vivienda = otro.vivienda;
+    }
+    return *this;
 }
