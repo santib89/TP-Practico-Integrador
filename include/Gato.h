@@ -22,4 +22,5 @@ void setColor(std:: string unColor);
 void setEsInterior(bool unEsInterior);
 
 void mostrarInfo() const override;
+Animales* clonar() const override;
 };

@@ -43,3 +43,8 @@ void Perro::mostrarInfo() const
               << " | Raza: " << raza
               << " | Tamaño: " << tamano << "\n";
 }
+
+Animales* Perro::clonar() const
+{
+    return new Perro(*this);
+}

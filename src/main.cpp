@@ -101,7 +101,7 @@ void opcionRegistrarAdoptante(Refugio& refugio)
 void opcionBuscarAnimal(const Refugio& refugio)
 {
     int id = leerValor<int>("ID del animal: ", 1);
-    Animales* animal = refugio.buscarAnimal(id);
+    Animales* animal = refugio(id);
 
     if (animal == nullptr)
     {
@@ -118,84 +118,32 @@ void opcionCrearSolicitud(Refugio& refugio)
     int idAdoptante = leerValor<int>("ID del adoptante: ", 1);
     int idAnimal = leerValor<int>("ID del animal: ", 1);
 
-    int resultado = refugio.crearSolicitud(idAdoptante, idAnimal);
-    if (resultado > 0)
-    {
-        std::cout << "Solicitud creada con ID " << resultado << "\n";
-    }
-    else if (resultado == -1)
-    {
-        std::cout << "No existe un adoptante con ese ID\n";
-    }
-    else if (resultado == -2)
-    {
-        std::cout << "No existe un animal con ese ID\n";
-    }
-    else
-    {
-        std::cout << "El animal ya fue adoptado\n";
-    }
+    int id = refugio.crearSolicitud(idAdoptante, idAnimal);
+    std::cout << "Solicitud creada con ID " << id << "\n";
 }
 
 void opcionConfirmarSolicitud(Refugio& refugio)
 {
     int id = leerValor<int>("ID de la solicitud: ", 1);
 
-    int resultado = refugio.confirmarSolicitud(id);
-    if (resultado == 0)
-    {
-        std::cout << "Solicitud confirmada. El animal fue adoptado\n";
-    }
-    else if (resultado == -1)
-    {
-        std::cout << "No existe una solicitud con ese ID\n";
-    }
-    else if (resultado == -2)
-    {
-        std::cout << "La solicitud no esta pendiente\n";
-    }
-    else
-    {
-        std::cout << "El animal ya fue adoptado por otra solicitud\n";
-    }
+    refugio.confirmarSolicitud(id);
+    std::cout << "Solicitud confirmada. El animal fue adoptado\n";
 }
 
 void opcionCancelarSolicitud(Refugio& refugio)
 {
     int id = leerValor<int>("ID de la solicitud: ", 1);
 
-    int resultado = refugio.cancelarSolicitud(id);
-    if (resultado == 0)
-    {
-        std::cout << "Solicitud cancelada\n";
-    }
-    else if (resultado == -1)
-    {
-        std::cout << "No existe una solicitud con ese ID\n";
-    }
-    else
-    {
-        std::cout << "La solicitud no esta pendiente\n";
-    }
+    refugio.cancelarSolicitud(id);
+    std::cout << "Solicitud cancelada\n";
 }
 
 void opcionDevolverAnimal(Refugio& refugio)
 {
     int id = leerValor<int>("ID del animal: ", 1);
 
-    int resultado = refugio.devolverAnimal(id);
-    if (resultado == 0)
-    {
-        std::cout << "El animal volvio a estar disponible\n";
-    }
-    else if (resultado == -1)
-    {
-        std::cout << "No existe un animal con ese ID\n";
-    }
-    else
-    {
-        std::cout << "El animal no estaba adoptado\n";
-    }
+    refugio.devolverAnimal(id);
+    std::cout << "El animal volvio a estar disponible\n";
 }
 
 //MENU
@@ -225,6 +173,8 @@ std :: cout << "0.Para Salir\n";
 option = getOption();
 
 //RESPUESTAS
+    try
+    {
     switch (option)
     {
     case 0:
@@ -266,6 +216,27 @@ option = getOption();
     default:
     std:: cout <<"Digito Invalido\n";
         break;
+    }
+    }
+    catch (const IdRepetidoException& e)
+    {
+        std::cout << "Error de ID: " << e.what() << "\n";
+    }
+    catch (const IndiceInvalidoException& e)
+    {
+        std::cout << "Error de indice: " << e.what() << "\n";
+    }
+    catch (const AnimalNoDisponibleException& e)
+    {
+        std::cout << "Error: " << e.what() << "\n";
+    }
+    catch (const ErrorRefugio& e)
+    {
+        std::cout << "Error: " << e.what() << "\n";
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "Error inesperado: " << e.what() << "\n";
     }
 } while (option != 0);
 

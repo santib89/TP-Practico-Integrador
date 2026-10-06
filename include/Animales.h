@@ -30,7 +30,13 @@ public:
    void setSalud(bool unSalud);
    void setAdopcion(bool unAdopcion);
 
-   virtual void mostrarInfo() const;
+   virtual void mostrarInfo() const = 0;
+   virtual Animales* clonar() const = 0;
+
+   // Dos animales son iguales si tienen el mismo ID
+   bool operator==(const Animales& otro) const;
+   // !animal es true cuando el animal NO esta disponible (ya fue adoptado)
+   bool operator!() const;
    
    
 };

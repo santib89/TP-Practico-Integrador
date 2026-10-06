@@ -2,21 +2,59 @@
 #include <iostream>
 
 Refugio::Refugio()
+    : animales(new Animales*[10]),
+      cantidadAnimales(0),
+      capacidadAnimales(10),
+      proximoIdAnimal(1),
+      proximoIdAdoptante(1),
+      proximoIdSolicitud(1)
 {
-    capacidadAnimales = 10;
-    cantidadAnimales = 0;
-    proximoIdAnimal = 1;
-    animales = new Animales*[capacidadAnimales];
+}
 
-    capacidadAdoptantes = 10;
-    cantidadAdoptantes = 0;
-    proximoIdAdoptante = 1;
-    adoptantes = new Adoptante[capacidadAdoptantes];
+// Copia profunda: cada animal se clona (con su tipo real, Perro o Gato)
+Refugio::Refugio(const Refugio& otro)
+    : animales(new Animales*[otro.capacidadAnimales]),
+      cantidadAnimales(otro.cantidadAnimales),
+      capacidadAnimales(otro.capacidadAnimales),
+      proximoIdAnimal(otro.proximoIdAnimal),
+      adoptantes(otro.adoptantes),
+      proximoIdAdoptante(otro.proximoIdAdoptante),
+      solicitudes(otro.solicitudes),
+      proximoIdSolicitud(otro.proximoIdSolicitud)
+{
+    for (int i = 0; i < cantidadAnimales; i++)
+    {
+        animales[i] = otro.animales[i]->clonar();
+    }
+}
 
-    capacidadSolicitudes = 10;
-    cantidadSolicitudes = 0;
-    proximoIdSolicitud = 1;
-    solicitudes = new Solicitud[capacidadSolicitudes];
+Refugio& Refugio::operator=(const Refugio& otro)
+{
+    if (this != &otro)
+    {
+        Animales** nuevo = new Animales*[otro.capacidadAnimales];
+        for (int i = 0; i < otro.cantidadAnimales; i++)
+        {
+            nuevo[i] = otro.animales[i]->clonar();
+        }
+
+        for (int i = 0; i < cantidadAnimales; i++)
+        {
+            delete animales[i];
+        }
+        delete[] animales;
+
+        animales = nuevo;
+        cantidadAnimales = otro.cantidadAnimales;
+        capacidadAnimales = otro.capacidadAnimales;
+        proximoIdAnimal = otro.proximoIdAnimal;
+
+        adoptantes = otro.adoptantes;
+        proximoIdAdoptante = otro.proximoIdAdoptante;
+        solicitudes = otro.solicitudes;
+        proximoIdSolicitud = otro.proximoIdSolicitud;
+    }
+    return *this;
 }
 
 Refugio::~Refugio()
@@ -26,8 +64,6 @@ Refugio::~Refugio()
         delete animales[i];
     }
     delete[] animales;
-    delete[] adoptantes;
-    delete[] solicitudes;
 }
 
 void Refugio::agrandarArreglo()
@@ -45,8 +81,16 @@ void Refugio::agrandarArreglo()
     capacidadAnimales = nuevaCapacidad;
 }
 
-void Refugio::guardarAnimal(Animales* nuevo)
+void Refugio::agregarAnimal(Animales* nuevo)
 {
+    for (int i = 0; i < cantidadAnimales; i++)
+    {
+        if (*animales[i] == *nuevo)
+        {
+            throw IdRepetidoException(nuevo->getID());
+        }
+    }
+
     if (cantidadAnimales == capacidadAnimales)
     {
         agrandarArreglo();
@@ -54,20 +98,48 @@ void Refugio::guardarAnimal(Animales* nuevo)
 
     animales[cantidadAnimales] = nuevo;
     cantidadAnimales++;
+
+    if (nuevo->getID() >= proximoIdAnimal)
+    {
+        proximoIdAnimal = nuevo->getID() + 1;
+    }
 }
 
 int Refugio::registrarPerro(std::string unNombre, int unEdad, std::string unRaza, double unTamano)
 {
-    int id = proximoIdAnimal++;
-    guardarAnimal(new Perro(id, unNombre, unEdad, true, false, unRaza, unTamano));
+    int id = proximoIdAnimal;
+    Animales* nuevo = new Perro(id, unNombre, unEdad, true, false, unRaza, unTamano);
+    try
+    {
+        agregarAnimal(nuevo);
+    }
+    catch (...)
+    {
+        delete nuevo;
+        throw;
+    }
     return id;
 }
 
 int Refugio::registrarGato(std::string unNombre, int unEdad, std::string unColor, bool unEsInterior)
 {
-    int id = proximoIdAnimal++;
-    guardarAnimal(new Gato(id, unNombre, unEdad, true, false, unColor, unEsInterior));
+    int id = proximoIdAnimal;
+    Animales* nuevo = new Gato(id, unNombre, unEdad, true, false, unColor, unEsInterior);
+    try
+    {
+        agregarAnimal(nuevo);
+    }
+    catch (...)
+    {
+        delete nuevo;
+        throw;
+    }
     return id;
+}
+
+int Refugio::cantidad() const
+{
+    return cantidadAnimales;
 }
 
 Animales* Refugio::buscarAnimal(int unID) const
@@ -83,6 +155,20 @@ Animales* Refugio::buscarAnimal(int unID) const
     return nullptr;
 }
 
+Animales& Refugio::operator[](int posicion) const
+{
+    if (posicion < 0 || posicion >= cantidadAnimales)
+    {
+        throw IndiceInvalidoException(posicion, cantidadAnimales);
+    }
+    return *animales[posicion];
+}
+
+Animales* Refugio::operator()(int unID) const
+{
+    return buscarAnimal(unID);
+}
+
 void Refugio::listarAnimales() const
 {
     if (cantidadAnimales == 0)
@@ -93,7 +179,7 @@ void Refugio::listarAnimales() const
 
     for (int i = 0; i < cantidadAnimales; i++)
     {
-        animales[i]->mostrarInfo();
+        (*this)[i].mostrarInfo();
     }
 }
 
@@ -103,11 +189,13 @@ void Refugio::listarDisponibles() const
 
     for (int i = 0; i < cantidadAnimales; i++)
     {
-        if (!animales[i]->getAdopcion())
+        // !animal es true cuando el animal NO esta disponible
+        if (!(*this)[i])
         {
-            animales[i]->mostrarInfo();
-            hayDisponibles = true;
+            continue;
         }
+        (*this)[i].mostrarInfo();
+        hayDisponibles = true;
     }
 
     if (!hayDisponibles)
@@ -116,39 +204,17 @@ void Refugio::listarDisponibles() const
     }
 }
 
-void Refugio::agrandarAdoptantes()
-{
-    int nuevaCapacidad = capacidadAdoptantes * 2;
-    Adoptante* nuevo = new Adoptante[nuevaCapacidad];
-
-    for (int i = 0; i < cantidadAdoptantes; i++)
-    {
-        nuevo[i] = adoptantes[i];
-    }
-
-    delete[] adoptantes;
-    adoptantes = nuevo;
-    capacidadAdoptantes = nuevaCapacidad;
-}
-
 int Refugio::registrarAdoptante(std::string unNombre, std::string unContacto, std::string unVivienda)
 {
-    if (cantidadAdoptantes == capacidadAdoptantes)
-    {
-        agrandarAdoptantes();
-    }
-
     int id = proximoIdAdoptante;
-    adoptantes[cantidadAdoptantes] = Adoptante(id, unNombre, unContacto, unVivienda);
-    cantidadAdoptantes++;
+    adoptantes.agregar(Adoptante(id, unNombre, unContacto, unVivienda));
     proximoIdAdoptante++;
-
     return id;
 }
 
-Adoptante* Refugio::buscarAdoptante(int unID) const
+const Adoptante* Refugio::buscarAdoptante(int unID) const
 {
-    for (int i = 0; i < cantidadAdoptantes; i++)
+    for (int i = 0; i < adoptantes.cantidad(); i++)
     {
         if (adoptantes[i].getID() == unID)
         {
@@ -158,24 +224,9 @@ Adoptante* Refugio::buscarAdoptante(int unID) const
     return nullptr;
 }
 
-void Refugio::agrandarSolicitudes()
+Solicitud* Refugio::buscarSolicitud(int unID)
 {
-    int nuevaCapacidad = capacidadSolicitudes * 2;
-    Solicitud* nuevo = new Solicitud[nuevaCapacidad];
-
-    for (int i = 0; i < cantidadSolicitudes; i++)
-    {
-        nuevo[i] = solicitudes[i];
-    }
-
-    delete[] solicitudes;
-    solicitudes = nuevo;
-    capacidadSolicitudes = nuevaCapacidad;
-}
-
-Solicitud* Refugio::buscarSolicitud(int unID) const
-{
-    for (int i = 0; i < cantidadSolicitudes; i++)
+    for (int i = 0; i < solicitudes.cantidad(); i++)
     {
         if (solicitudes[i].getID() == unID)
         {
@@ -189,97 +240,84 @@ int Refugio::crearSolicitud(int unIdAdoptante, int unIdAnimal)
 {
     if (buscarAdoptante(unIdAdoptante) == nullptr)
     {
-        return -1;
+        throw NoEncontradoException("un adoptante", unIdAdoptante);
     }
 
-    Animales* animal = buscarAnimal(unIdAnimal);
+    Animales* animal = (*this)(unIdAnimal);
     if (animal == nullptr)
     {
-        return -2;
+        throw NoEncontradoException("un animal", unIdAnimal);
     }
 
-    if (animal->getAdopcion())
+    if (!*animal)
     {
-        return -3;
-    }
-
-    if (cantidadSolicitudes == capacidadSolicitudes)
-    {
-        agrandarSolicitudes();
+        throw AnimalNoDisponibleException(unIdAnimal);
     }
 
     int id = proximoIdSolicitud;
-    solicitudes[cantidadSolicitudes] = Solicitud(id, unIdAdoptante, unIdAnimal);
-    cantidadSolicitudes++;
+    solicitudes.agregar(Solicitud(id, unIdAdoptante, unIdAnimal));
     proximoIdSolicitud++;
-
     return id;
 }
 
-int Refugio::confirmarSolicitud(int unID)
+void Refugio::confirmarSolicitud(int unID)
 {
     Solicitud* solicitud = buscarSolicitud(unID);
     if (solicitud == nullptr)
     {
-        return -1;
+        throw NoEncontradoException("una solicitud", unID);
     }
 
     if (solicitud->getEstado() != EstadoSolicitud::Pendiente)
     {
-        return -2;
+        throw OperacionInvalidaException("La solicitud no esta pendiente");
     }
 
     Animales* animal = buscarAnimal(solicitud->getIdAnimal());
-    if (animal->getAdopcion())
+    if (!*animal)
     {
-        return -3;
+        throw AnimalNoDisponibleException(animal->getID());
     }
 
     animal->setAdopcion(true);
     solicitud->setEstado(EstadoSolicitud::Confirmada);
-
-    return 0;
 }
 
-int Refugio::cancelarSolicitud(int unID)
+void Refugio::cancelarSolicitud(int unID)
 {
     Solicitud* solicitud = buscarSolicitud(unID);
     if (solicitud == nullptr)
     {
-        return -1;
+        throw NoEncontradoException("una solicitud", unID);
     }
 
     if (solicitud->getEstado() != EstadoSolicitud::Pendiente)
     {
-        return -2;
+        throw OperacionInvalidaException("La solicitud no esta pendiente");
     }
 
     solicitud->setEstado(EstadoSolicitud::Cancelada);
-
-    return 0;
 }
 
-int Refugio::devolverAnimal(int unIdAnimal)
+void Refugio::devolverAnimal(int unIdAnimal)
 {
-    Animales* animal = buscarAnimal(unIdAnimal);
+    Animales* animal = (*this)(unIdAnimal);
     if (animal == nullptr)
     {
-        return -1;
+        throw NoEncontradoException("un animal", unIdAnimal);
     }
 
     if (!animal->getAdopcion())
     {
-        return -2;
+        throw OperacionInvalidaException("El animal no estaba adoptado");
     }
 
     animal->setAdopcion(false);
-
-    return 0;
 }
 
 void Refugio::listarSolicitudes() const
 {
-    if (cantidadSolicitudes == 0)
+    if (solicitudes.cantidad() == 0)
     {
         std::cout << "No hay solicitudes registradas\n";
         return;
@@ -287,15 +325,15 @@ void Refugio::listarSolicitudes() const
 
     int confirmadas = 0;
 
-    for (int i = 0; i < cantidadSolicitudes; i++)
+    for (int i = 0; i < solicitudes.cantidad(); i++)
     {
         if (solicitudes[i].getEstado() == EstadoSolicitud::Confirmada)
         {
             confirmadas++;
         }
 
-        Adoptante* adoptante = buscarAdoptante(solicitudes[i].getIdAdoptante());
-        Animales* animal = buscarAnimal(solicitudes[i].getIdAnimal());
+        const Adoptante* adoptante = buscarAdoptante(solicitudes[i].getIdAdoptante());
+        const Animales* animal = buscarAnimal(solicitudes[i].getIdAnimal());
 
         std::cout << "Solicitud ID: " << solicitudes[i].getID()
                   << " | Adoptante: " << adoptante->getID() << " (" << adoptante->getNombre() << ")"

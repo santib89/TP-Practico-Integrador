@@ -67,3 +67,13 @@ void Animales::mostrarInfo() const
               << " | Salud: " << (salud ? "Sano" : "Enfermo")
               << " | Estado: " << (adopcion ? "Adoptado" : "Disponible");
 }
+
+bool Animales::operator==(const Animales& otro) const
+{
+    return ID == otro.ID;
+}
+
+bool Animales::operator!() const
+{
+    return adopcion;
+}

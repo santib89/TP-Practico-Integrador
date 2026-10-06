@@ -45,3 +45,8 @@ void Gato::mostrarInfo() const
               << " | Color: " << color
               << " | Interior: " << (esInterior ? "Si" : "No") << "\n";
 }
+
+Animales* Gato::clonar() const
+{
+    return new Gato(*this);
+}
