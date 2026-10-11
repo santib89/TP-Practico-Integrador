@@ -1,11 +1,11 @@
 #include <iostream>
 #include <string>
 #include "../include/Adoptante.h"
-#include "../include/Animales.h"
+#include "../include/Animal.h"
 #include "../include/Gato.h"
 #include "../include/Perro.h"
 #include "../include/Refugio.h"
-#include "../include/Solicitud.h"
+#include "../include/SolicitudAdopcion.h"
 
 template <typename T>
 T leerValor(std::string mensaje, T minimo)
@@ -101,7 +101,7 @@ void opcionRegistrarAdoptante(Refugio& refugio)
 void opcionBuscarAnimal(const Refugio& refugio)
 {
     int id = leerValor<int>("ID del animal: ", 1);
-    Animales* animal = refugio(id);
+    Animal* animal = refugio(id);
 
     if (animal == nullptr)
     {
@@ -146,105 +146,96 @@ void opcionDevolverAnimal(Refugio& refugio)
     std::cout << "El animal volvio a estar disponible\n";
 }
 
-//MENU
-
 void menu(){
-//Variables
-int option;
-Refugio refugio;
-do //Bucle de repeticion para el menu
-{
+    int option;
+    Refugio refugio;
+    do
+    {
+        std::cout << "==========Opciones==========\n";
+        std::cout << "1.Para Registrar un Perro\n";
+        std::cout << "2.Para Registrar un Gato\n";
+        std::cout << "3.Listar todos los animales\n";
+        std::cout << "4.Listar los animales disponibles\n";
+        std::cout << "5.Registrar un adoptante\n";
+        std::cout << "6.Buscar un animal por ID\n";
+        std::cout << "7.Crear una solicitud de adopción\n";
+        std::cout << "8.Confirmar una solicitud\n";
+        std::cout << "9.Cancelar una solicitud\n";
+        std::cout << "10.Devolver un animal al estado disponible\n";
+        std::cout << "11.Ver solicitudes e historial de adopciones\n";
+        std::cout << "0.Para Salir\n";
+        option = getOption();
 
-//OPCIONES
-std:: cout << "==========Opciones==========\n";
-std :: cout << "1.Para Registrar un Perro\n";
-std :: cout << "2.Para Registrar un Gato\n";
-std :: cout << "3.Listar todos los animales\n";
-std :: cout << "4.Listar los animales disponibles\n";
-std :: cout << "5.Registrar un adoptante\n";
-std :: cout << "6.Buscar un animal por ID\n";
-std :: cout << "7.Crear una solicitud de adopción\n";
-std :: cout << "8.Confirmar una solicitud\n";
-std :: cout << "9.Cancelar una solicitud\n";
-std :: cout << "10.Devolver un animal al estado disponible\n";
-std :: cout << "11.Ver solicitudes e historial de adopciones\n";
-std :: cout << "0.Para Salir\n";
-//RECIBIR OPTION
-option = getOption();
-
-//RESPUESTAS
-    try
-    {
-    switch (option)
-    {
-    case 0:
-        std:: cout <<"Saliendo...\n";
-        break;
-    case 1:
-        opcionRegistrarPerro(refugio);
-        break;
-    case 2:
-        opcionRegistrarGato(refugio);
-        break;
-    case 3:
-        refugio.listarAnimales();
-        break;
-    case 4:
-        refugio.listarDisponibles();
-        break;
-    case 5:
-        opcionRegistrarAdoptante(refugio);
-        break;
-    case 6:
-        opcionBuscarAnimal(refugio);
-        break;
-    case 7:
-        opcionCrearSolicitud(refugio);
-        break;
-    case 8:
-        opcionConfirmarSolicitud(refugio);
-        break;
-    case 9:
-        opcionCancelarSolicitud(refugio);
-        break;
-    case 10:
-        opcionDevolverAnimal(refugio);
-        break;
-    case 11:
-        refugio.listarSolicitudes();
-        break;
-    default:
-    std:: cout <<"Digito Invalido\n";
-        break;
-    }
-    }
-    catch (const IdRepetidoException& e)
-    {
-        std::cout << "Error de ID: " << e.what() << "\n";
-    }
-    catch (const IndiceInvalidoException& e)
-    {
-        std::cout << "Error de indice: " << e.what() << "\n";
-    }
-    catch (const AnimalNoDisponibleException& e)
-    {
-        std::cout << "Error: " << e.what() << "\n";
-    }
-    catch (const ErrorRefugio& e)
-    {
-        std::cout << "Error: " << e.what() << "\n";
-    }
-    catch (const std::exception& e)
-    {
-        std::cout << "Error inesperado: " << e.what() << "\n";
-    }
-} while (option != 0);
-
+        try
+        {
+            switch (option)
+            {
+                case 0:
+                    std::cout << "Saliendo...\n";
+                    break;
+                case 1:
+                    opcionRegistrarPerro(refugio);
+                    break;
+                case 2:
+                    opcionRegistrarGato(refugio);
+                    break;
+                case 3:
+                    refugio.listarAnimales();
+                    break;
+                case 4:
+                    refugio.listarDisponibles();
+                    break;
+                case 5:
+                    opcionRegistrarAdoptante(refugio);
+                    break;
+                case 6:
+                    opcionBuscarAnimal(refugio);
+                    break;
+                case 7:
+                    opcionCrearSolicitud(refugio);
+                    break;
+                case 8:
+                    opcionConfirmarSolicitud(refugio);
+                    break;
+                case 9:
+                    opcionCancelarSolicitud(refugio);
+                    break;
+                case 10:
+                    opcionDevolverAnimal(refugio);
+                    break;
+                case 11:
+                    refugio.listarSolicitudes();
+                    break;
+                default:
+                    std::cout << "Digito Invalido\n";
+                    break;
+            }
+        }
+        catch (const IdRepetidoException& e)
+        {
+            std::cout << "Error de ID: " << e.what() << "\n";
+        }
+        catch (const IndiceInvalidoException& e)
+        {
+            std::cout << "Error de indice: " << e.what() << "\n";
+        }
+        catch (const AnimalNoDisponibleException& e)
+        {
+            std::cout << "Error: " << e.what() << "\n";
+        }
+        catch (const ErrorRefugio& e)
+        {
+            std::cout << "Error: " << e.what() << "\n";
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << "Error inesperado: " << e.what() << "\n";
+        }
+    } while (option != 0);
 }
 
-//Funcion Principal
-int main() 
+int main()
 {
-menu();
+    menu();
     return 0;
 }

@@ -1,18 +1,17 @@
 #pragma once
 #include <string>
-#include "Animales.h"
+#include "Animal.h"
 #include "Perro.h"
 #include "Gato.h"
 #include "Adoptante.h"
-#include "Solicitud.h"
+#include "SolicitudAdopcion.h"
 #include "Coleccion.h"
 #include "Excepciones.h"
 
 class Refugio
 {
 private:
-    // El refugio es dueno de cada Animales apuntado: los crea con new y los libera en el destructor.
-    Animales** animales;
+    Animal** animales;
     int cantidadAnimales;
     int capacidadAnimales;
     int proximoIdAnimal;
@@ -20,14 +19,13 @@ private:
     Coleccion<Adoptante> adoptantes;
     int proximoIdAdoptante;
 
-    Coleccion<Solicitud> solicitudes;
+    Coleccion<SolicitudAdopcion> solicitudes;
     int proximoIdSolicitud;
 
     void agrandarArreglo();
-    Solicitud* buscarSolicitud(int unID);
+    SolicitudAdopcion* buscarSolicitud(int unID);
 
 public:
-    // Regla de los Tres
     Refugio();
     Refugio(const Refugio& otro);
     Refugio& operator=(const Refugio& otro);
@@ -36,13 +34,12 @@ public:
     int registrarPerro(std::string unNombre, int unEdad, std::string unRaza, double unTamano);
     int registrarGato(std::string unNombre, int unEdad, std::string unColor, bool unEsInterior);
 
-    // Toma posesion del animal. Lanza IdRepetidoException (sin tomar posesion) si el ID ya existe.
-    void agregarAnimal(Animales* nuevo);
+    void agregarAnimal(Animal* nuevo);
 
     int cantidad() const;
-    Animales* buscarAnimal(int unID) const;
-    Animales& operator[](int posicion) const;   // por posicion; lanza IndiceInvalidoException
-    Animales* operator()(int unID) const;       // por ID; nullptr si no existe
+    Animal* buscarAnimal(int unID) const;
+    Animal& operator[](int posicion) const;
+    Animal* operator()(int unID) const;
     void listarAnimales() const;
     void listarDisponibles() const;
 

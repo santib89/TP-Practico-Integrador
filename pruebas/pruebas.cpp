@@ -39,7 +39,7 @@ static void pruebaRegistroYBusqueda()
     verificar(r(99) == nullptr, "operator() devuelve nullptr si el ID no existe");
     verificar(r[1].getNombre() == "Michi", "operator[] accede al segundo animal por posicion");
 
-    Animales& base = r[0];
+    Animal& base = r[0];
     verificar(dynamic_cast<Perro*>(&base) != nullptr, "el animal 0 es realmente un Perro (polimorfismo)");
     verificar(dynamic_cast<Gato*>(&r[1]) != nullptr, "el animal 1 es realmente un Gato (polimorfismo)");
 }
@@ -241,9 +241,6 @@ static void pruebaColeccionGenerica()
 static void pruebaLiberacionDeMemoria()
 {
     titulo("Liberacion de memoria");
-    // Se crean y destruyen muchos refugios con animales. Con -fsanitize=address
-    // (make pruebas) cualquier doble liberacion o uso tras liberar aborta el programa,
-    // y "leaks" informa si quedo algo sin liberar al terminar.
     int antes = Coleccion<Adoptante>::cantidadInstancias();
     for (int i = 0; i < 50; i++)
     {

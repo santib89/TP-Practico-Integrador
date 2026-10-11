@@ -21,10 +21,10 @@ Las entidades del enunciado se corresponden directamente con clases: un animal t
 
 ```
 include/            Headers (.h)
-  Animales.h        Clase abstracta base
+  Animal.h          Clase abstracta base
   Perro.h, Gato.h   Clases derivadas
   Adoptante.h
-  Solicitud.h       Incluye el enum EstadoSolicitud
+  SolicitudAdopcion.h  Incluye el enum EstadoSolicitud
   Refugio.h         Clase central del sistema
   Coleccion.h       Clase genérica (template) con miembro estático
   Excepciones.h     Jerarquía de excepciones personalizadas
@@ -66,17 +66,17 @@ Flujo típico: registrar un animal (opción 1 o 2) y un adoptante (5); crear una
 
 ### Clases
 
-- **Animales** (abstracta): ID, nombre, edad, salud y estado de adopción. Declara `mostrarInfo()` y `clonar()` como funciones virtuales puras y tiene destructor virtual. No puede instanciarse.
-- **Perro / Gato**: heredan públicamente de `Animales`. `Perro` agrega raza y tamaño; `Gato` agrega color de pelaje y si es de interior (un solo `bool`: interior o exterior son excluyentes). Implementan `mostrarInfo()` con `override` y `clonar()`.
+- **Animal** (abstracta): ID, nombre, edad, salud y estado de adopción. Declara `mostrarInfo()` y `clonar()` como funciones virtuales puras y tiene destructor virtual. No puede instanciarse.
+- **Perro / Gato**: heredan públicamente de `Animal`. `Perro` agrega raza y tamaño; `Gato` agrega color de pelaje y si es de interior (un solo `bool`: interior o exterior son excluyentes). Implementan `mostrarInfo()` con `override` y `clonar()`.
 - **Adoptante**: ID, nombre, contacto y tipo de vivienda.
-- **Solicitud**: relaciona un adoptante con un animal a través de sus IDs y guarda su estado (`Pendiente`, `Confirmada`, `Cancelada`).
-- **Refugio**: administra todo el sistema. Es el equivalente al "main" de la lógica: el menú de `main.cpp` solo pide datos y delega cada operación en un método de `Refugio`. Relaciona `Animales`, `Adoptante` y `Solicitud` por composición: es dueño de todos ellos y los destruye con él.
-- **Coleccion\<T\>**: arreglo dinámico genérico con `agregar()`, `cantidad()` y acceso con `[]`. `Refugio` la usa con dos tipos: `Coleccion<Adoptante>` y `Coleccion<Solicitud>`.
+- **SolicitudAdopcion**: relaciona un adoptante con un animal a través de sus IDs y guarda su estado (`Pendiente`, `Confirmada`, `Cancelada`).
+- **Refugio**: administra todo el sistema. Es el equivalente al "main" de la lógica: el menú de `main.cpp` solo pide datos y delega cada operación en un método de `Refugio`. Relaciona `Animal`, `Adoptante` y `SolicitudAdopcion` por composición: es dueño de todos ellos y los destruye con él.
+- **Coleccion\<T\>**: arreglo dinámico genérico con `agregar()`, `cantidad()` y acceso con `[]`. `Refugio` la usa con dos tipos: `Coleccion<Adoptante>` y `Coleccion<SolicitudAdopcion>`.
 
 ### Decisiones
 
-- **Catálogo polimórfico**: los animales se guardan en un único arreglo de punteros `Animales**`. Se listan llamando a `mostrarInfo()` sin saber si cada elemento es un perro o un gato.
-- **Relaciones por ID**: `Solicitud` guarda los IDs, no punteros, de modo que copiar un `Refugio` no deja punteros apuntando al refugio original.
+- **Catálogo polimórfico**: los animales se guardan en un único arreglo de punteros `Animal**`. Se listan llamando a `mostrarInfo()` sin saber si cada elemento es un perro o un gato.
+- **Relaciones por ID**: `SolicitudAdopcion` guarda los IDs, no punteros, de modo que copiar un `Refugio` no deja punteros apuntando al refugio original.
 - **IDs automáticos**: cada tipo tiene su propio contador. `agregarAnimal()` actualiza el contador si recibe un ID más alto, de modo que no se generen IDs repetidos.
 - **Errores con excepciones**: en lugar de códigos de retorno, `Refugio` lanza excepciones y el menú las captura.
 
@@ -84,15 +84,15 @@ Flujo típico: registrar un animal (opción 1 o 2) y un adoptante (5); crear una
 
 | Operador | Clase | Significado |
 |---|---|---|
-| `==` | `Animales` | Dos animales son iguales si tienen el mismo ID |
+| `==` | `Animal` | Dos animales son iguales si tienen el mismo ID |
 | `[]` | `Refugio` | Acceso a un animal por posición |
 | `()` | `Refugio` | Búsqueda de un animal por ID (`nullptr` si no existe) |
-| `!` | `Animales` | `!animal` es verdadero si el animal **no** está disponible |
-| `=` | `Refugio`, `Adoptante`, `Solicitud`, `Coleccion` | Asignación con copia profunda |
+| `!` | `Animal` | `!animal` es verdadero si el animal **no** está disponible |
+| `=` | `Refugio`, `Adoptante`, `SolicitudAdopcion`, `Coleccion` | Asignación con copia profunda |
 
 ### Miembro estático en la clase genérica
 
-`Coleccion<T>` tiene `static int instanciasVivas`, que cuenta cuántas colecciones de ese tipo existen. Cada instanciación del template (`Coleccion<int>`, `Coleccion<Adoptante>`, `Coleccion<Solicitud>`, ...) es una clase distinta y tiene su propia copia del contador: crear una `Coleccion<int>` no modifica el contador de `Coleccion<std::string>`. El constructor y el de copia lo incrementan y el destructor lo decrementa, por lo que vuelve a 0 cuando se liberan todas.
+`Coleccion<T>` tiene `static int instanciasVivas`, que cuenta cuántas colecciones de ese tipo existen. Cada instanciación del template (`Coleccion<int>`, `Coleccion<Adoptante>`, `Coleccion<SolicitudAdopcion>`, ...) es una clase distinta y tiene su propia copia del contador: crear una `Coleccion<int>` no modifica el contador de `Coleccion<std::string>`. El constructor y el de copia lo incrementan y el destructor lo decrementa, por lo que vuelve a 0 cuando se liberan todas.
 
 ### Excepciones
 
@@ -116,16 +116,16 @@ En el menú se capturan con varios `catch` por referencia constante (de la más 
 
 | Bloque | Lo crea | Lo libera |
 |---|---|---|
-| Cada `Perro` / `Gato` (con `new`) | `Refugio::registrarPerro`, `registrarGato`, o quien llame a `agregarAnimal` | El destructor de `Refugio` (`delete animales[i]`); el destructor virtual de `Animales` hace que se destruya el tipo correcto |
-| El arreglo `Animales**` | El constructor de `Refugio`; `agrandarArreglo()` reserva uno más grande al llenarse | El destructor de `Refugio` (`delete[]`); `agrandarArreglo()` libera el viejo |
+| Cada `Perro` / `Gato` (con `new`) | `Refugio::registrarPerro`, `registrarGato`, o quien llame a `agregarAnimal` | El destructor de `Refugio` (`delete animales[i]`); el destructor virtual de `Animal` hace que se destruya el tipo correcto |
+| El arreglo `Animal**` | El constructor de `Refugio`; `agrandarArreglo()` reserva uno más grande al llenarse | El destructor de `Refugio` (`delete[]`); `agrandarArreglo()` libera el viejo |
 | El arreglo interno de `Coleccion<T>` | El constructor de `Coleccion`; `agrandar()` | El destructor de `Coleccion` |
 | Animales duplicados en una copia | `Refugio(const Refugio&)` y `operator=`, mediante `clonar()` | El destructor del refugio copia |
 
-Reglas: `Refugio` es el único dueño de los animales. `agregarAnimal(Animales*)` toma posesión del puntero solo si no lanza una excepción; si lanza `IdRepetidoException`, el animal sigue siendo del que llamó. `registrarPerro` y `registrarGato` liberan el animal que acaban de crear si `agregarAnimal` falla.
+Reglas: `Refugio` es el único dueño de los animales. `agregarAnimal(Animal*)` toma posesión del puntero solo si no lanza una excepción; si lanza `IdRepetidoException`, el animal sigue siendo del que llamó. `registrarPerro` y `registrarGato` liberan el animal que acaban de crear si `agregarAnimal` falla.
 
 ### Regla de los Tres
 
-- `Animales` (virtual), `Perro`, `Gato`, `Adoptante` y `Solicitud` contienen solo valores (números, `bool`, `std::string`), por lo que la copia por defecto es correcta; igualmente se definen constructor de copia y, en `Adoptante` y `Solicitud`, `operator=`.
+- `Animal` (virtual), `Perro`, `Gato`, `Adoptante` y `SolicitudAdopcion` contienen solo valores (números, `bool`, `std::string`), por lo que la copia por defecto es correcta; igualmente se definen constructor de copia y, en `Adoptante` y `SolicitudAdopcion`, `operator=`.
 - `Coleccion<T>` y `Refugio` reservan memoria dinámica y definen **constructor de copia, `operator=` y destructor** con copia profunda. En `Refugio`, cada animal se duplica con `clonar()`, que devuelve un `Perro` o un `Gato` según el tipo real. `operator=` reserva la copia antes de liberar lo anterior y protege contra la autoasignación (`a = a`).
 
 ### Recorrido con aritmética de punteros

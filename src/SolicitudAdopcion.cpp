@@ -1,45 +1,40 @@
-#include "../include/Solicitud.h"
+#include "../include/SolicitudAdopcion.h"
 
-// Constructores
-// Por defecto: solicitud vacia, en estado Pendiente
-Solicitud::Solicitud(){
+SolicitudAdopcion::SolicitudAdopcion(){
     ID = 0;
     idAdoptante = 0;
     idAnimal = 0;
     estado = EstadoSolicitud::Pendiente;
 }
 
-// Parametrizado: toda solicitud nueva arranca en estado Pendiente
-Solicitud::Solicitud(int unID, int unIdAdoptante, int unIdAnimal){
+SolicitudAdopcion::SolicitudAdopcion(int unID, int unIdAdoptante, int unIdAnimal){
     ID = unID;
     idAdoptante = unIdAdoptante;
     idAnimal = unIdAnimal;
     estado = EstadoSolicitud::Pendiente;
 }
 
-// De copia: copia cada atributo, incluido el estado actual
-Solicitud::Solicitud(const Solicitud& otro){
+SolicitudAdopcion::SolicitudAdopcion(const SolicitudAdopcion& otro){
     ID = otro.ID;
     idAdoptante = otro.idAdoptante;
     idAnimal = otro.idAnimal;
     estado = otro.estado;
 }
 
-// Getters
-int Solicitud::getID() const {
+int SolicitudAdopcion::getID() const {
     return ID;
 }
-int Solicitud::getIdAdoptante() const {
+int SolicitudAdopcion::getIdAdoptante() const {
     return idAdoptante;
 }
-int Solicitud::getIdAnimal() const {
+int SolicitudAdopcion::getIdAnimal() const {
     return idAnimal;
 }
-EstadoSolicitud Solicitud::getEstado() const {
+EstadoSolicitud SolicitudAdopcion::getEstado() const {
     return estado;
 }
 
-std::string Solicitud::getEstadoTexto() const {
+std::string SolicitudAdopcion::getEstadoTexto() const {
     switch (estado){
         case EstadoSolicitud::Pendiente:
             return "Pendiente";
@@ -50,21 +45,20 @@ std::string Solicitud::getEstadoTexto() const {
     }
 }
 
-// Setters
-void Solicitud::setID(int unID){
+void SolicitudAdopcion::setID(int unID){
     ID = unID;
 }
-void Solicitud::setIdAdoptante(int unIdAdoptante){
+void SolicitudAdopcion::setIdAdoptante(int unIdAdoptante){
     idAdoptante = unIdAdoptante;
 }
-void Solicitud::setIdAnimal(int unIdAnimal){
+void SolicitudAdopcion::setIdAnimal(int unIdAnimal){
     idAnimal = unIdAnimal;
 }
-void Solicitud::setEstado(EstadoSolicitud unEstado){
+void SolicitudAdopcion::setEstado(EstadoSolicitud unEstado){
     estado = unEstado;
 }
 
-Solicitud& Solicitud::operator=(const Solicitud& otro){
+SolicitudAdopcion& SolicitudAdopcion::operator=(const SolicitudAdopcion& otro){
     if (this != &otro){
         ID = otro.ID;
         idAdoptante = otro.idAdoptante;

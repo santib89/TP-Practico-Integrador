@@ -1,20 +1,20 @@
-#include "../include/Animales.h"
+#include "../include/Animal.h"
 #include <iostream>
-Animales::Animales(int unID, std::string unNombre, int unEdad, bool unSalud, bool unAdopcion){
+Animal::Animal(int unID, std::string unNombre, int unEdad, bool unSalud, bool unAdopcion){
     ID= unID;
     nombre=unNombre;
     edad=unEdad;
     salud=unSalud;
     adopcion=unAdopcion;
 }
-Animales::Animales() {
+Animal::Animal() {
     ID = 0;
     nombre = "";
     edad = 0;
     salud = true;
     adopcion = false;
 }
-Animales::Animales(const Animales& otro) {
+Animal::Animal(const Animal& otro) {
     ID = otro.ID;
     nombre = otro.nombre;
     edad = otro.edad;
@@ -22,44 +22,41 @@ Animales::Animales(const Animales& otro) {
     adopcion = otro.adopcion;
 }
 
-Animales::~Animales() { }
+Animal::~Animal() { }
 
-
-// Getters
-int Animales::getID() const {
+int Animal::getID() const {
     return ID;
 }
-std:: string Animales ::getNombre() const {
+std::string Animal::getNombre() const {
     return nombre;
 }
-int Animales ::getEdad() const {
+int Animal::getEdad() const {
     return edad;
 }
-bool Animales ::getSalud() const {
+bool Animal::getSalud() const {
     return salud;
 }
-bool Animales ::getAdopcion() const {
+bool Animal::getAdopcion() const {
     return adopcion;
 }
 
-//Setters
-void Animales::setID(int unID){
+void Animal::setID(int unID){
     ID = unID;
 }
-void Animales::setNombre(std:: string unNombre){
+void Animal::setNombre(std::string unNombre){
     nombre = unNombre;
 }
-void Animales::setEdad(int unEdad){
+void Animal::setEdad(int unEdad){
     edad = unEdad;
 }
-void Animales::setSalud(bool unSalud){
+void Animal::setSalud(bool unSalud){
     salud = unSalud;
 }
-void Animales::setAdopcion(bool unAdopcion){
+void Animal::setAdopcion(bool unAdopcion){
     adopcion = unAdopcion;
 }
 
-void Animales::mostrarInfo() const
+void Animal::mostrarInfo() const
 {
     std::cout << "ID: " << ID
               << " | Nombre: " << nombre
@@ -68,12 +65,12 @@ void Animales::mostrarInfo() const
               << " | Estado: " << (adopcion ? "Adoptado" : "Disponible");
 }
 
-bool Animales::operator==(const Animales& otro) const
+bool Animal::operator==(const Animal& otro) const
 {
     return ID == otro.ID;
 }
 
-bool Animales::operator!() const
+bool Animal::operator!() const
 {
     return adopcion;
 }

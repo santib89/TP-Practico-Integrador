@@ -1,8 +1,6 @@
 #pragma once
 #include "Excepciones.h"
 
-// Coleccion generica con arreglo dinamico propio. Duena de su memoria:
-// reserva con new[], se agranda duplicando y libera en el destructor.
 template <typename T>
 class Coleccion
 {
@@ -11,8 +9,6 @@ private:
     int cantidadElementos;
     int capacidad;
 
-    // Miembro estatico: es UNO por cada instanciacion del template.
-    // Coleccion<Adoptante> y Coleccion<Solicitud> tienen contadores separados.
     static int instanciasVivas;
 
     void agrandar()

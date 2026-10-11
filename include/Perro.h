@@ -1,26 +1,23 @@
 #pragma once
-#include "Animales.h"
+#include "Animal.h"
 #include <string>
-class Perro: public Animales
+class Perro: public Animal
 {
-private: 
-std:: string raza;
-double tamano;
+private:
+    std::string raza;
+    double tamano;
 
-public: 
-// Constructores
-Perro();
-Perro(int unID, std:: string unNombre, int unEdad, bool unSalud, bool unAdopcion, std:: string unRaza, double unTamano);
-Perro(const Perro& otro);
+public:
+    Perro();
+    Perro(int unID, std::string unNombre, int unEdad, bool unSalud, bool unAdopcion, std::string unRaza, double unTamano);
+    Perro(const Perro& otro);
 
-// Getters
-std:: string getRaza() const;
-double getTamano() const;
+    std::string getRaza() const;
+    double getTamano() const;
 
-// Setters
-void setRaza(std:: string unRaza); 
-void setTamano(double unTamano);
+    void setRaza(std::string unRaza);
+    void setTamano(double unTamano);
 
-void mostrarInfo() const override;
-Animales* clonar() const override;
+    void mostrarInfo() const override;
+    Animal* clonar() const override;
 };
