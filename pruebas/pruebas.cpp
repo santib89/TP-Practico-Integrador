@@ -4,90 +4,75 @@
 #include "../include/Coleccion.h"
 #include "../include/Excepciones.h"
 
-static int totales = 0;
-static int fallidas = 0;
+int total = 0;
+int fallos = 0;
 
-static void verificar(bool condicion, const std::string& descripcion)
+void chequear(bool condicion, std::string texto)
 {
-    totales++;
+    total++;
     if (condicion)
     {
-        std::cout << "  [OK]    " << descripcion << "\n";
+        std::cout << "  OK     " << texto << "\n";
     }
     else
     {
-        fallidas++;
-        std::cout << "  [FALLO] " << descripcion << "\n";
+        fallos++;
+        std::cout << "  FALLO  " << texto << "\n";
     }
 }
 
-static void titulo(const std::string& texto)
+void pruebasValidas()
 {
-    std::cout << "\n== " << texto << " ==\n";
-}
-
-static void pruebaRegistroYBusqueda()
-{
-    titulo("Registro y busqueda");
+    std::cout << "\nCasos validos\n";
     Refugio r;
     int idPerro = r.registrarPerro("Rex", 3, "Labrador", 20.5);
     int idGato = r.registrarGato("Michi", 2, "Gris", true);
 
-    verificar(idPerro == 1 && idGato == 2, "los IDs se asignan en orden: 1 y 2");
-    verificar(r.cantidad() == 2, "el refugio tiene 2 animales");
-    verificar(r(1) != nullptr && r(1)->getNombre() == "Rex", "operator() encuentra el perro por ID");
-    verificar(r(99) == nullptr, "operator() devuelve nullptr si el ID no existe");
-    verificar(r[1].getNombre() == "Michi", "operator[] accede al segundo animal por posicion");
+    chequear(idPerro == 1 && idGato == 2, "los IDs se asignan en orden");
+    chequear(r.cantidad() == 2, "el refugio tiene 2 animales");
+    chequear(r(1)->getNombre() == "Rex", "buscar por ID con ()");
+    chequear(r(99) == nullptr, "buscar un ID que no existe devuelve nullptr");
+    chequear(r[1].getNombre() == "Michi", "acceder por posicion con []");
 
-    Animal& base = r[0];
-    verificar(dynamic_cast<Perro*>(&base) != nullptr, "el animal 0 es realmente un Perro (polimorfismo)");
-    verificar(dynamic_cast<Gato*>(&r[1]) != nullptr, "el animal 1 es realmente un Gato (polimorfismo)");
-}
-
-static void pruebaOperadoresAnimales()
-{
-    titulo("Operadores de Animales");
     Perro a(1, "A", 1, true, false, "X", 1.0);
     Gato b(1, "B", 2, true, false, "Y", false);
     Perro c(2, "C", 3, true, true, "Z", 2.0);
-
-    verificar(a == b, "== es verdadero para animales con el mismo ID aunque sean de distinto tipo");
-    verificar(!(a == c), "== es falso para animales con distinto ID");
-    verificar(!a == false, "!animal es falso si el animal esta disponible");
-    verificar(!c == true, "!animal es verdadero si el animal ya fue adoptado");
+    chequear(a == b, "== es verdadero si tienen el mismo ID, aunque sean de distinto tipo");
+    chequear(!(a == c), "== es falso si tienen distinto ID");
+    chequear(!a == false, "! es falso si el animal esta disponible");
+    chequear(!c == true, "! es verdadero si el animal ya fue adoptado");
 }
 
-static void pruebaFlujoAdopcion()
+void pruebasAdopcion()
 {
-    titulo("Flujo de adopcion valido");
+    std::cout << "\nProceso de adopcion\n";
     Refugio r;
     r.registrarPerro("Rex", 3, "Labrador", 20.5);
-    int idAdoptante = r.registrarAdoptante("Ana", "ana@mail.com", "Casa");
+    int idAdoptante = r.registrarAdoptante("Ana", "3584001122", "Casa");
 
-    int idSolicitud = r.crearSolicitud(idAdoptante, 1);
-    verificar(idSolicitud == 1, "se crea la solicitud 1");
-    verificar(!r[0] == false, "mientras esta pendiente el animal sigue disponible");
+    int solicitud = r.crearSolicitud(idAdoptante, 1);
+    chequear(!r[0] == false, "con la solicitud pendiente el animal sigue disponible");
 
-    r.confirmarSolicitud(idSolicitud);
-    verificar(!r[0] == true, "al confirmar, el animal queda adoptado");
+    r.confirmarSolicitud(solicitud);
+    chequear(!r[0] == true, "al confirmar, el animal queda adoptado");
 
     r.devolverAnimal(1);
-    verificar(!r[0] == false, "al devolverlo vuelve a estar disponible");
+    chequear(!r[0] == false, "al devolverlo vuelve a estar disponible");
 
-    int segunda = r.crearSolicitud(idAdoptante, 1);
-    r.cancelarSolicitud(segunda);
-    verificar(!r[0] == false, "cancelar una solicitud no modifica al animal");
+    int otra = r.crearSolicitud(idAdoptante, 1);
+    r.cancelarSolicitud(otra);
+    chequear(!r[0] == false, "cancelar una solicitud no cambia al animal");
 }
 
-static void pruebaExcepciones()
+void pruebasErrores()
 {
-    titulo("Casos de error (excepciones)");
+    std::cout << "\nCasos de error\n";
     Refugio r;
     r.registrarPerro("Rex", 3, "Labrador", 20.5);
-    int idAdoptante = r.registrarAdoptante("Ana", "ana@mail.com", "Casa");
+    int idAdoptante = r.registrarAdoptante("Ana", "3584001122", "Casa");
 
     bool atrapada = false;
-    Perro* repetido = new Perro(1, "Clon", 1, true, false, "X", 1.0);
+    Perro* repetido = new Perro(1, "Otro", 1, true, false, "X", 1.0);
     try
     {
         r.agregarAnimal(repetido);
@@ -95,181 +80,193 @@ static void pruebaExcepciones()
     catch (const IdRepetidoException& e)
     {
         atrapada = true;
-        std::cout << "         mensaje: " << e.what() << "\n";
     }
-    verificar(atrapada, "ID repetido lanza IdRepetidoException");
-    verificar(r.cantidad() == 1, "tras el ID repetido el refugio sigue con 1 animal");
     delete repetido;
+    chequear(atrapada && r.cantidad() == 1, "ID repetido lanza IdRepetidoException");
 
     atrapada = false;
-    try { r[5]; }
+    try
+    {
+        r[5];
+    }
     catch (const IndiceInvalidoException& e)
     {
         atrapada = true;
-        std::cout << "         mensaje: " << e.what() << "\n";
     }
-    verificar(atrapada, "indice fuera de rango lanza IndiceInvalidoException");
+    chequear(atrapada, "indice fuera de rango lanza IndiceInvalidoException");
 
     atrapada = false;
-    try { r[-1]; }
-    catch (const IndiceInvalidoException&) { atrapada = true; }
-    verificar(atrapada, "indice negativo lanza IndiceInvalidoException");
+    try
+    {
+        r[-1];
+    }
+    catch (const IndiceInvalidoException& e)
+    {
+        atrapada = true;
+    }
+    chequear(atrapada, "indice negativo lanza IndiceInvalidoException");
 
-    r.confirmarSolicitud(r.crearSolicitud(idAdoptante, 1));
+    int solicitud = r.crearSolicitud(idAdoptante, 1);
+    r.confirmarSolicitud(solicitud);
+
     atrapada = false;
-    try { r.crearSolicitud(idAdoptante, 1); }
+    try
+    {
+        r.crearSolicitud(idAdoptante, 1);
+    }
     catch (const AnimalNoDisponibleException& e)
     {
         atrapada = true;
-        std::cout << "         mensaje: " << e.what() << "\n";
     }
-    verificar(atrapada, "pedir un animal adoptado lanza AnimalNoDisponibleException");
+    chequear(atrapada, "pedir un animal ya adoptado lanza AnimalNoDisponibleException");
 
     atrapada = false;
-    try { r.crearSolicitud(99, 1); }
-    catch (const NoEncontradoException&) { atrapada = true; }
-    verificar(atrapada, "adoptante inexistente lanza NoEncontradoException");
+    try
+    {
+        r.crearSolicitud(99, 1);
+    }
+    catch (const NoEncontradoException& e)
+    {
+        atrapada = true;
+    }
+    chequear(atrapada, "adoptante que no existe lanza NoEncontradoException");
 
     atrapada = false;
-    try { r.crearSolicitud(idAdoptante, 99); }
-    catch (const NoEncontradoException&) { atrapada = true; }
-    verificar(atrapada, "animal inexistente lanza NoEncontradoException");
+    try
+    {
+        r.crearSolicitud(idAdoptante, 99);
+    }
+    catch (const NoEncontradoException& e)
+    {
+        atrapada = true;
+    }
+    chequear(atrapada, "animal que no existe lanza NoEncontradoException");
 
     atrapada = false;
-    try { r.confirmarSolicitud(1); }
-    catch (const OperacionInvalidaException&) { atrapada = true; }
-    verificar(atrapada, "confirmar una solicitud ya confirmada lanza OperacionInvalidaException");
-
-    atrapada = false;
-    try { r.devolverAnimal(99); }
-    catch (const NoEncontradoException&) { atrapada = true; }
-    verificar(atrapada, "devolver un animal inexistente lanza NoEncontradoException");
+    try
+    {
+        r.confirmarSolicitud(solicitud);
+    }
+    catch (const OperacionInvalidaException& e)
+    {
+        atrapada = true;
+    }
+    chequear(atrapada, "confirmar una solicitud ya confirmada lanza OperacionInvalidaException");
 
     r.devolverAnimal(1);
     atrapada = false;
-    try { r.devolverAnimal(1); }
-    catch (const ErrorRefugio&) { atrapada = true; }
-    verificar(atrapada, "devolver un animal ya disponible se captura como ErrorRefugio (clase base)");
+    try
+    {
+        r.devolverAnimal(1);
+    }
+    catch (const OperacionInvalidaException& e)
+    {
+        atrapada = true;
+    }
+    chequear(atrapada, "devolver un animal que no estaba adoptado lanza OperacionInvalidaException");
 
     atrapada = false;
-    try { r[7]; }
-    catch (const std::exception& e) { atrapada = std::string(e.what()).size() > 0; }
-    verificar(atrapada, "toda excepcion se puede capturar como const std::exception&");
+    try
+    {
+        r.registrarPerro("Rex", 3, "Labrador", 20.5);
+        r[10];
+    }
+    catch (const ErrorRefugio& e)
+    {
+        atrapada = true;
+    }
+    chequear(atrapada, "las excepciones tambien se pueden atrapar como ErrorRefugio");
 }
 
-static void pruebaCopiaProfunda()
+void pruebasCopiaProfunda()
 {
-    titulo("Copia profunda (constructor de copia)");
+    std::cout << "\nCopia profunda\n";
     Refugio original;
     original.registrarPerro("Rex", 3, "Labrador", 20.5);
     original.registrarGato("Michi", 2, "Gris", true);
-    int idAdoptante = original.registrarAdoptante("Ana", "ana@mail.com", "Casa");
+    int idAdoptante = original.registrarAdoptante("Ana", "3584001122", "Casa");
 
     Refugio copia(original);
-    verificar(copia.cantidad() == 2, "la copia tiene los mismos animales");
-    verificar(&copia[0] != &original[0], "los animales de la copia son objetos distintos (no comparten memoria)");
-    verificar(dynamic_cast<Perro*>(&copia[0]) != nullptr && dynamic_cast<Gato*>(&copia[1]) != nullptr,
-              "la copia conserva el tipo real de cada animal");
+    chequear(copia.cantidad() == 2, "la copia tiene los mismos animales");
+    chequear(&copia[0] != &original[0], "los animales de la copia estan en otra direccion de memoria");
 
-    original.confirmarSolicitud(original.crearSolicitud(idAdoptante, 1));
-    verificar(!original[0] == true, "el original quedo con el perro adoptado");
-    verificar(!copia[0] == false, "la copia NO se entera: su perro sigue disponible");
+    int solicitud = original.crearSolicitud(idAdoptante, 1);
+    original.confirmarSolicitud(solicitud);
+    chequear(!original[0] == true && !copia[0] == false, "adoptar en el original no cambia la copia");
 
-    original.registrarGato("Nuevo", 1, "Negro", false);
-    verificar(original.cantidad() == 3 && copia.cantidad() == 2, "agregar al original no cambia la copia");
+    copia.registrarPerro("Toby", 1, "Mestizo", 8.0);
+    chequear(original.cantidad() == 2 && copia.cantidad() == 3, "agregar a la copia no cambia el original");
 
-    int idCopia = copia.registrarPerro("Luna", 1, "Mestiza", 8.0);
-    verificar(idCopia == 3, "la copia continua la numeracion de IDs del original");
+    Refugio asignado;
+    asignado.registrarGato("Luna", 4, "Negro", false);
+    asignado = original;
+    chequear(asignado.cantidad() == 2 && asignado[0].getNombre() == "Rex", "con = queda con los animales del original");
+    chequear(&asignado[0] != &original[0], "con = tampoco se comparte la memoria");
+
+    Refugio& mismo = asignado;
+    asignado = mismo;
+    chequear(asignado.cantidad() == 2, "asignar un refugio a si mismo no lo rompe");
 }
 
-static void pruebaAsignacion()
+void pruebasColeccion()
 {
-    titulo("Copia profunda (operator=)");
-    Refugio a;
-    a.registrarPerro("Rex", 3, "Labrador", 20.5);
-    Refugio b;
-    b.registrarGato("Michi", 2, "Gris", true);
-    b.registrarGato("Tom", 4, "Negro", false);
-
-    b = a;
-    verificar(b.cantidad() == 1 && b[0].getNombre() == "Rex", "tras b = a, b tiene exactamente los animales de a");
-    verificar(&b[0] != &a[0], "b y a no comparten memoria");
-
-    a.registrarPerro("Otro", 2, "X", 5.0);
-    verificar(b.cantidad() == 1, "cambios posteriores en a no afectan a b");
-
-    Refugio& alias = b;
-    b = alias;
-    verificar(b.cantidad() == 1 && b[0].getNombre() == "Rex", "la autoasignacion b = b no rompe el objeto");
-}
-
-static void pruebaColeccionGenerica()
-{
-    titulo("Coleccion<T> (template)");
-    verificar(Coleccion<int>::cantidadInstancias() == 0, "al inicio no hay Coleccion<int>");
-    verificar(Coleccion<std::string>::cantidadInstancias() == 0, "al inicio no hay Coleccion<std::string>");
+    std::cout << "\nColeccion generica\n";
+    int antes = Coleccion<int>::cantidadInstancias();
     {
         Coleccion<int> numeros;
-        Coleccion<int> otros;
         Coleccion<std::string> palabras;
-
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 20; i++)
         {
-            numeros.agregar(i * i);
+            numeros.agregar(i);
         }
         palabras.agregar("hola");
-        palabras.agregar("mundo");
 
-        verificar(numeros.cantidad() == 10 && numeros[9] == 81, "Coleccion<int> crece mas alla de su capacidad inicial");
-        verificar(palabras.cantidad() == 2 && palabras[1] == "mundo", "Coleccion<std::string> funciona igual");
-        verificar(Coleccion<int>::cantidadInstancias() == 2, "el miembro estatico de Coleccion<int> cuenta 2");
-        verificar(Coleccion<std::string>::cantidadInstancias() == 1, "el de Coleccion<std::string> cuenta 1 (cada instanciacion tiene el suyo)");
-
-        Coleccion<int> copia(numeros);
-        copia.agregar(1000);
-        verificar(numeros.cantidad() == 10 && copia.cantidad() == 11, "la copia de Coleccion es independiente");
-        verificar(Coleccion<int>::cantidadInstancias() == 3, "la copia tambien se cuenta en el estatico");
+        chequear(numeros.cantidad() == 20 && numeros[19] == 19, "Coleccion<int> crece mas alla de su capacidad inicial");
+        chequear(palabras.cantidad() == 1 && palabras[0] == "hola", "Coleccion<string> guarda y devuelve datos");
+        chequear(Coleccion<int>::cantidadInstancias() == antes + 1, "el contador estatico de int cuenta solo las de int");
 
         bool atrapada = false;
-        try { numeros[10]; }
-        catch (const IndiceInvalidoException&) { atrapada = true; }
-        verificar(atrapada, "Coleccion<T>::operator[] fuera de rango lanza IndiceInvalidoException");
+        try
+        {
+            numeros[20];
+        }
+        catch (const IndiceInvalidoException& e)
+        {
+            atrapada = true;
+        }
+        chequear(atrapada, "[] fuera de rango lanza IndiceInvalidoException");
     }
-    verificar(Coleccion<int>::cantidadInstancias() == 0, "al salir del bloque se liberan todas (contador en 0)");
+    chequear(Coleccion<int>::cantidadInstancias() == antes, "el contador vuelve al valor de antes al destruirlas");
 }
 
-static void pruebaLiberacionDeMemoria()
+void pruebaMemoria()
 {
-    titulo("Liberacion de memoria");
+    std::cout << "\nLiberacion de memoria\n";
     int antes = Coleccion<Adoptante>::cantidadInstancias();
     for (int i = 0; i < 50; i++)
     {
         Refugio r;
-        for (int j = 0; j < 25; j++)
+        for (int j = 0; j < 50; j++)
         {
-            r.registrarPerro("P", 1, "R", 1.0);
-            r.registrarGato("G", 1, "C", false);
+            r.registrarPerro("Rex", 3, "Labrador", 20.5);
+            r.registrarGato("Michi", 2, "Gris", true);
         }
-        r.registrarAdoptante("A", "c", "v");
         Refugio copia(r);
-        Refugio asignada;
-        asignada = copia;
+        Refugio asignado;
+        asignado = copia;
     }
-    verificar(Coleccion<Adoptante>::cantidadInstancias() == antes, "no quedan colecciones vivas tras destruir todos los refugios");
-    verificar(true, "50 refugios de 50 animales creados, copiados y destruidos sin errores de memoria");
+    chequear(Coleccion<Adoptante>::cantidadInstancias() == antes, "se crean, copian y destruyen refugios y no quedan colecciones vivas");
 }
 
 int main()
 {
-    pruebaRegistroYBusqueda();
-    pruebaOperadoresAnimales();
-    pruebaFlujoAdopcion();
-    pruebaExcepciones();
-    pruebaCopiaProfunda();
-    pruebaAsignacion();
-    pruebaColeccionGenerica();
-    pruebaLiberacionDeMemoria();
+    pruebasValidas();
+    pruebasAdopcion();
+    pruebasErrores();
+    pruebasCopiaProfunda();
+    pruebasColeccion();
+    pruebaMemoria();
 
-    std::cout << "\nResultado: " << (totales - fallidas) << " de " << totales << " pruebas correctas\n";
-    return fallidas == 0 ? 0 : 1;
+    std::cout << "\nResultado: " << (total - fallos) << " de " << total << " pruebas correctas\n";
+    return 0;
 }

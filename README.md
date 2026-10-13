@@ -1,181 +1,174 @@
 # Sistema de Gestión de un Refugio de Animales
 
-Trabajo Práctico Integrador - Programación Orientada a Objetos 2026 (C++).
+Trabajo Práctico Integrador de Programación Orientada a Objetos 2026, hecho en C++.
 
-## Integrantes
+Integrantes: Santiago Becerra y Juan Leon Flesca.
 
-- Santiago Becerra
-- Juan Leon Flesca
+## De qué trata
 
-## Descripción
+Es un programa de consola que maneja un refugio de animales. Se pueden registrar perros y gatos, registrar adoptantes y hacer el proceso de adopción mediante solicitudes, que pueden estar pendientes, confirmadas o canceladas. Los datos quedan en memoria mientras el programa está abierto; no se guardan en ningún archivo.
 
-Programa de consola que administra un refugio ficticio: registra perros y gatos, registra adoptantes y gestiona el proceso de adopción mediante solicitudes que pueden estar pendientes, confirmadas o canceladas. Los datos viven en memoria mientras el programa está abierto (no se guardan en archivos).
+## Por qué conviene usar objetos
 
-## Por qué el problema se adapta al paradigma orientado a objetos
+El problema ya viene pensado en entidades: animales, adoptantes, solicitudes y el refugio que los administra. Cada una tiene sus datos y las cosas que puede hacer, así que lo más natural fue hacer una clase por cada una.
 
-El programa se estructura como una colección de objetos que interactúan entre sí. Cada objeto tiene un estado (datos) y un comportamiento (métodos).
+Perro y Gato son animales que comparten datos (ID, nombre, edad, salud, si fue adoptado) y agregan cosas propias, por eso usamos herencia. Gracias al polimorfismo el refugio puede listar todos los animales sin fijarse si cada uno es perro o gato. Y con el encapsulamiento los datos solo se cambian a través de métodos, por ejemplo para que un animal ya adoptado no pueda volver a pedirse.
 
-Las entidades del enunciado se corresponden directamente con clases: un animal tiene datos propios (ID, nombre, edad, salud, estado de adopción) y acciones propias (mostrar su información, marcarse como adoptado). Un perro y un gato son tipos de animal con atributos adicionales, lo que se expresa naturalmente con herencia y permite tratarlos de forma uniforme mediante polimorfismo. El refugio coordina a todos los demás objetos (animales, adoptantes, solicitudes), y el encapsulamiento evita que el resto del programa modifique datos sin pasar por las operaciones que garantizan que el sistema siga siendo consistente (por ejemplo, un animal adoptado no puede volver a ser solicitado).
-
-## Estructura del proyecto
+## Archivos
 
 ```
-include/            Headers (.h)
-  Animal.h          Clase abstracta base
-  Perro.h, Gato.h   Clases derivadas
+include/              los .h
+  Animal.h            clase abstracta base
+  Perro.h, Gato.h     clases hijas de Animal
   Adoptante.h
-  SolicitudAdopcion.h  Incluye el enum EstadoSolicitud
-  Refugio.h         Clase central del sistema
-  Coleccion.h       Clase genérica (template) con miembro estático
-  Excepciones.h     Jerarquía de excepciones personalizadas
-src/                Implementaciones (.cpp) y main.cpp (menú)
-pruebas/pruebas.cpp Pruebas automáticas
+  SolicitudAdopcion.h tiene también el enum EstadoSolicitud
+  Refugio.h           la clase principal
+  Coleccion.h         clase genérica (template)
+  Excepciones.h       las excepciones propias
+src/                  los .cpp y main.cpp (el menú)
+pruebas/pruebas.cpp   pruebas automáticas
+diagramas/            pseudocódigo y diagramas de flujo
 Makefile
 ```
 
-## Compilación y uso
+## Cómo compilar y ejecutar
 
-Requiere un compilador con soporte de C++17 (`g++` o `clang++`) y `make`.
-
-```bash
-make            # compila y genera el ejecutable "refugio"
-./refugio       # ejecuta el programa (también: make run)
-make clean      # borra lo generado
-```
-
-Sin `make`:
+Hace falta `g++` (o `clang++`) con C++17 y `make`.
 
 ```bash
-g++ -std=c++17 -Iinclude src/*.cpp -o refugio
+make          # compila y crea el ejecutable "refugio"
+./refugio     # lo ejecuta (también sirve make run)
+make clean    # borra lo generado
 ```
+
+Sin `make`: `g++ -std=c++17 -Iinclude src/*.cpp -o refugio`
 
 ### Menú
 
 ```
-1. Registrar un perro                 7. Crear una solicitud de adopción
-2. Registrar un gato                  8. Confirmar una solicitud
-3. Listar todos los animales          9. Cancelar una solicitud
+1. Registrar un perro                7. Crear una solicitud de adopción
+2. Registrar un gato                 8. Confirmar una solicitud
+3. Listar todos los animales         9. Cancelar una solicitud
 4. Listar los animales disponibles   10. Devolver un animal al estado disponible
 5. Registrar un adoptante            11. Ver solicitudes e historial de adopciones
-6. Buscar un animal por ID            0. Salir
+6. Buscar un animal por ID           0. Salir
 ```
 
-Flujo típico: registrar un animal (opción 1 o 2) y un adoptante (5); crear una solicitud con los IDs de ambos (7); confirmarla (8) o cancelarla (9). Una solicitud confirmada marca al animal como adoptado; la opción 10 lo devuelve a disponible. Los IDs de animales, adoptantes y solicitudes se asignan automáticamente desde 1 y se informan al crearlos. Todas las entradas se validan: ante un valor inválido el programa vuelve a pedirlo, y ante un error de operación muestra un mensaje y mantiene el menú activo.
+Una sesión típica: registrar un animal (1 o 2), registrar un adoptante (5), crear la solicitud con los IDs de los dos (7) y confirmarla (8) o cancelarla (9). Al confirmarla el animal queda como adoptado, y con la opción 10 vuelve a estar disponible. Los IDs se asignan solos, empezando en 1, y el programa avisa cuál le tocó a cada uno. Si se ingresa un dato inválido el programa lo vuelve a pedir, y si hay un error (por ejemplo un ID que no existe) muestra el mensaje y sigue en el menú.
 
-## Diseño
+## Cómo está armado
 
-### Clases
+### Las clases
 
-- **Animal** (abstracta): ID, nombre, edad, salud y estado de adopción. Declara `mostrarInfo()` y `clonar()` como funciones virtuales puras y tiene destructor virtual. No puede instanciarse.
-- **Perro / Gato**: heredan públicamente de `Animal`. `Perro` agrega raza y tamaño; `Gato` agrega color de pelaje y si es de interior (un solo `bool`: interior o exterior son excluyentes). Implementan `mostrarInfo()` con `override` y `clonar()`.
+- **Animal**: es abstracta, así que no se pueden crear objetos de esta clase. Guarda ID, nombre, edad, salud y estado de adopción. Tiene `mostrarInfo()` y `clonar()` como funciones virtuales puras, y destructor virtual.
+- **Perro y Gato**: heredan de Animal. Perro agrega raza y tamaño; Gato agrega color y si es de interior (un solo `bool`, porque interior y exterior se excluyen). Los dos implementan `mostrarInfo()` y `clonar()`.
 - **Adoptante**: ID, nombre, contacto y tipo de vivienda.
-- **SolicitudAdopcion**: relaciona un adoptante con un animal a través de sus IDs y guarda su estado (`Pendiente`, `Confirmada`, `Cancelada`).
-- **Refugio**: administra todo el sistema. Es el equivalente al "main" de la lógica: el menú de `main.cpp` solo pide datos y delega cada operación en un método de `Refugio`. Relaciona `Animal`, `Adoptante` y `SolicitudAdopcion` por composición: es dueño de todos ellos y los destruye con él.
-- **Coleccion\<T\>**: arreglo dinámico genérico con `agregar()`, `cantidad()` y acceso con `[]`. `Refugio` la usa con dos tipos: `Coleccion<Adoptante>` y `Coleccion<SolicitudAdopcion>`.
+- **SolicitudAdopcion**: une un adoptante con un animal usando sus IDs y guarda el estado (Pendiente, Confirmada o Cancelada).
+- **Refugio**: es la clase central. El menú de `main.cpp` solo pide datos y le pasa el trabajo a un método de Refugio. Contiene los animales, los adoptantes y las solicitudes, y los libera cuando se destruye.
+- **Coleccion\<T\>**: un arreglo dinámico genérico con `agregar()`, `cantidad()` y `[]`. Refugio la usa con dos tipos: `Coleccion<Adoptante>` y `Coleccion<SolicitudAdopcion>`.
 
-### Decisiones
+### Decisiones que tomamos
 
-- **Catálogo polimórfico**: los animales se guardan en un único arreglo de punteros `Animal**`. Se listan llamando a `mostrarInfo()` sin saber si cada elemento es un perro o un gato.
-- **Relaciones por ID**: `SolicitudAdopcion` guarda los IDs, no punteros, de modo que copiar un `Refugio` no deja punteros apuntando al refugio original.
-- **IDs automáticos**: cada tipo tiene su propio contador. `agregarAnimal()` actualiza el contador si recibe un ID más alto, de modo que no se generen IDs repetidos.
-- **Errores con excepciones**: en lugar de códigos de retorno, `Refugio` lanza excepciones y el menú las captura.
+- Los animales están todos en un mismo arreglo de punteros `Animal**`. Así se pueden listar llamando a `mostrarInfo()` sin saber qué tipo es cada uno.
+- La solicitud guarda los IDs y no punteros. Así, si se copia un refugio, las solicitudes no quedan apuntando al refugio original.
+- Cada tipo (animal, adoptante, solicitud) tiene su propio contador de IDs.
+- Los errores se manejan con excepciones, no con códigos de retorno. Refugio las lanza y el menú las atrapa.
 
-### Sobrecarga de operadores
+### Operadores sobrecargados
 
-| Operador | Clase | Significado |
-|---|---|---|
-| `==` | `Animal` | Dos animales son iguales si tienen el mismo ID |
-| `[]` | `Refugio` | Acceso a un animal por posición |
-| `()` | `Refugio` | Búsqueda de un animal por ID (`nullptr` si no existe) |
-| `!` | `Animal` | `!animal` es verdadero si el animal **no** está disponible |
-| `=` | `Refugio`, `Adoptante`, `SolicitudAdopcion`, `Coleccion` | Asignación con copia profunda |
+- `==` en Animal: dos animales son iguales si tienen el mismo ID.
+- `!` en Animal: `!animal` da verdadero si el animal ya no está disponible (fue adoptado).
+- `[]` en Refugio: devuelve el animal que está en una posición.
+- `()` en Refugio: busca un animal por ID y devuelve `nullptr` si no existe.
+- `=` en Refugio, Adoptante, SolicitudAdopcion y Coleccion.
 
 ### Miembro estático en la clase genérica
 
-`Coleccion<T>` tiene `static int instanciasVivas`, que cuenta cuántas colecciones de ese tipo existen. Cada instanciación del template (`Coleccion<int>`, `Coleccion<Adoptante>`, `Coleccion<SolicitudAdopcion>`, ...) es una clase distinta y tiene su propia copia del contador: crear una `Coleccion<int>` no modifica el contador de `Coleccion<std::string>`. El constructor y el de copia lo incrementan y el destructor lo decrementa, por lo que vuelve a 0 cuando se liberan todas.
+`Coleccion<T>` tiene un `static int instanciasVivas` que cuenta cuántas colecciones existen. Cada tipo con el que se usa el template (`Coleccion<int>`, `Coleccion<Adoptante>`, etc.) es una clase distinta y tiene su propio contador. Por eso crear una `Coleccion<int>` no cambia el contador de una `Coleccion<std::string>`. El constructor lo suma, el destructor lo resta, y vuelve a 0 cuando se destruyen todas.
 
 ### Excepciones
 
-Todas heredan de `ErrorRefugio`, que a su vez hereda de `std::exception`:
+Todas heredan de `ErrorRefugio`, que hereda de `std::exception`.
 
-| Excepción | Cuándo se lanza |
-|---|---|
-| `IdRepetidoException` | `agregarAnimal()` con un ID que ya existe |
-| `IndiceInvalidoException` | `[]` con una posición fuera de rango (en `Refugio` y en `Coleccion`) |
-| `AnimalNoDisponibleException` | Pedir o confirmar la adopción de un animal ya adoptado |
-| `NoEncontradoException` | Adoptante, animal o solicitud inexistente |
-| `OperacionInvalidaException` | Confirmar o cancelar una solicitud que no está pendiente; devolver un animal que no estaba adoptado |
+- `IdRepetidoException`: se agrega un animal con un ID que ya existe.
+- `IndiceInvalidoException`: se usa `[]` con una posición fuera de rango (en Refugio y en Coleccion).
+- `AnimalNoDisponibleException`: se pide un animal que ya fue adoptado.
+- `NoEncontradoException`: no existe el adoptante, el animal o la solicitud.
+- `OperacionInvalidaException`: se confirma o cancela una solicitud que no estaba pendiente, o se devuelve un animal que no estaba adoptado.
 
-En el menú se capturan con varios `catch` por referencia constante (de la más específica a la más general, terminando en `const std::exception&`), así el programa muestra el mensaje y vuelve al menú.
+En el menú se atrapan con varios `catch` por referencia constante, de la más específica a la más general, y el último es `const std::exception&`.
 
 ### Función genérica
 
-`leerValor<T>()` (en `main.cpp`) lee un valor por consola, lo valida contra un mínimo y repite hasta que sea válido. Se usa con `int` (edades, IDs, opciones) y con `double` (tamaño de un perro).
+`leerValor<T>()`, en `main.cpp`, lee un número por consola, comprueba que no sea menor que un mínimo y lo pide de nuevo hasta que sea válido. La usamos con `int` (edades, IDs, opciones) y con `double` (el tamaño del perro).
 
 ## Memoria dinámica: quién crea y quién libera
 
-| Bloque | Lo crea | Lo libera |
-|---|---|---|
-| Cada `Perro` / `Gato` (con `new`) | `Refugio::registrarPerro`, `registrarGato`, o quien llame a `agregarAnimal` | El destructor de `Refugio` (`delete animales[i]`); el destructor virtual de `Animal` hace que se destruya el tipo correcto |
-| El arreglo `Animal**` | El constructor de `Refugio`; `agrandarArreglo()` reserva uno más grande al llenarse | El destructor de `Refugio` (`delete[]`); `agrandarArreglo()` libera el viejo |
-| El arreglo interno de `Coleccion<T>` | El constructor de `Coleccion`; `agrandar()` | El destructor de `Coleccion` |
-| Animales duplicados en una copia | `Refugio(const Refugio&)` y `operator=`, mediante `clonar()` | El destructor del refugio copia |
+- Cada Perro o Gato se crea con `new` en `registrarPerro` o `registrarGato`, y lo libera el destructor de Refugio. Como el destructor de Animal es virtual, se destruye el tipo correcto.
+- El arreglo `Animal**` lo crea el constructor de Refugio. Cuando se llena, `agrandarArreglo()` reserva uno más grande y libera el viejo. Lo libera el destructor de Refugio.
+- El arreglo interno de `Coleccion<T>` lo crea su constructor, crece cuando hace falta y lo libera su destructor.
+- Los animales duplicados al copiar un refugio los crea el constructor de copia (o `operator=`) con `clonar()`, y los libera el destructor de esa copia.
 
-Reglas: `Refugio` es el único dueño de los animales. `agregarAnimal(Animal*)` toma posesión del puntero solo si no lanza una excepción; si lanza `IdRepetidoException`, el animal sigue siendo del que llamó. `registrarPerro` y `registrarGato` liberan el animal que acaban de crear si `agregarAnimal` falla.
+Refugio es el único dueño de los animales. `agregarAnimal` se queda con el puntero solo si no falla; si lanza `IdRepetidoException`, el animal sigue siendo de quien lo pasó. Por eso `registrarPerro` y `registrarGato` borran el animal que crearon si `agregarAnimal` falla.
 
 ### Regla de los Tres
 
-- `Animal` (virtual), `Perro`, `Gato`, `Adoptante` y `SolicitudAdopcion` contienen solo valores (números, `bool`, `std::string`), por lo que la copia por defecto es correcta; igualmente se definen constructor de copia y, en `Adoptante` y `SolicitudAdopcion`, `operator=`.
-- `Coleccion<T>` y `Refugio` reservan memoria dinámica y definen **constructor de copia, `operator=` y destructor** con copia profunda. En `Refugio`, cada animal se duplica con `clonar()`, que devuelve un `Perro` o un `Gato` según el tipo real. `operator=` reserva la copia antes de liberar lo anterior y protege contra la autoasignación (`a = a`).
+Refugio y Coleccion reservan memoria dinámica, así que definen constructor de copia, `operator=` y destructor, con copia profunda. Si se usara la copia por defecto, dos refugios compartirían los mismos animales y se borrarían dos veces.
 
-### Recorrido con aritmética de punteros
+Para copiar los animales usamos `clonar()`: cada clase devuelve una copia de sí misma (un Perro devuelve un Perro y un Gato devuelve un Gato). Así no hace falta saber el tipo al copiar. `operator=` reserva primero la copia y después libera lo anterior, y controla que no se asigne un objeto a sí mismo.
+
+Animal, Perro, Gato, Adoptante y SolicitudAdopcion solo tienen números, `bool` y `std::string`, así que la copia por defecto alcanza. Igual definimos el constructor de copia, y `operator=` en Adoptante y SolicitudAdopcion.
+
+### Aritmética de punteros
 
 `Refugio::buscarAnimal()` recorre el arreglo de animales con `*(animales + i)`.
 
 ## Pruebas
 
 ```bash
-make pruebas            # ejecuta las pruebas automáticas
-make pruebas-memoria    # además verifica fugas de memoria con "leaks" (macOS)
-make pruebas-asan       # además usa AddressSanitizer (si el equipo lo soporta)
+make pruebas            # corre las pruebas automáticas
+make pruebas-asan       # lo mismo, con AddressSanitizer (detecta errores de memoria)
+make pruebas-memoria    # solo en macOS, usa "leaks" para buscar memoria sin liberar
 ```
 
-`pruebas/pruebas.cpp` ejecuta 50 verificaciones. Resultado actual: **50 de 50 correctas** y **0 fugas de memoria** (`leaks`).
+`pruebas/pruebas.cpp` hace 35 verificaciones y al final dice cuántas salieron bien.
 
-### Casos válidos
+Casos válidos que se prueban:
 
-- Registro de perro y gato con IDs consecutivos; búsqueda por ID (`()`) y por posición (`[]`); verificación del tipo real de cada animal (polimorfismo).
-- Operadores `==` (mismo ID, aun siendo de distinto tipo) y `!` (animal disponible / adoptado).
-- Flujo completo de adopción: crear, confirmar, devolver, y cancelar sin afectar al animal.
-- `Coleccion<int>` y `Coleccion<std::string>`: crecimiento más allá de la capacidad inicial y contadores estáticos independientes.
+- Registrar perros y gatos con IDs consecutivos, buscarlos por ID y por posición, y comprobar que cada uno es del tipo correcto.
+- Los operadores `==` (mismo ID aunque sean de distinto tipo) y `!`.
+- El flujo de adopción completo: crear, confirmar, devolver, y cancelar sin que el animal cambie.
+- `Coleccion<int>` y `Coleccion<std::string>`: que crezcan más allá de la capacidad inicial y que tengan contadores estáticos separados.
 
-### Casos de error
+Casos de error que se prueban:
 
-- ID de animal repetido → `IdRepetidoException` (y el refugio no cambia).
-- Índice fuera de rango y negativo → `IndiceInvalidoException`, en `Refugio` y en `Coleccion`.
-- Solicitar un animal ya adoptado → `AnimalNoDisponibleException`.
-- Adoptante, animal o solicitud inexistente → `NoEncontradoException`.
-- Confirmar una solicitud ya confirmada, o devolver un animal que no estaba adoptado → `OperacionInvalidaException`.
-- Captura por clase base (`ErrorRefugio`) y por `const std::exception&`.
+- ID de animal repetido (el refugio queda igual).
+- Índice fuera de rango o negativo, en Refugio y en Coleccion.
+- Pedir un animal ya adoptado.
+- Adoptante, animal o solicitud que no existe.
+- Confirmar una solicitud ya confirmada, o devolver un animal que no estaba adoptado.
 
-### Copia profunda y liberación de memoria
+Copia profunda y memoria:
 
-- Constructor de copia: la copia de un `Refugio` tiene los mismos animales pero en bloques de memoria distintos (direcciones distintas) y con su tipo real; adoptar un animal en el original **no** cambia la copia, y agregar animales a uno no afecta al otro.
-- `operator=`: tras `b = a`, `b` queda con exactamente los animales de `a` (y libera los que tenía); cambios posteriores en `a` no afectan a `b`; la autoasignación no rompe el objeto.
-- Liberación: se crean, copian, asignan y destruyen 50 refugios de 50 animales; los contadores estáticos de `Coleccion` vuelven a su valor inicial y `leaks` informa 0 fugas. Una doble liberación, que ocurriría si la copia fuera superficial, abortaría el programa.
+- Al copiar un refugio, los animales están en direcciones de memoria distintas. Adoptar uno en el original no cambia la copia, y agregar animales a uno no afecta al otro.
+- Con `b = a`, `b` queda con los mismos animales que `a`, y `a = a` no rompe nada.
+- Se crean, copian y destruyen 50 refugios de 100 animales cada uno. Los contadores estáticos vuelven a 0 y no hay errores de memoria.
 
-### Casos de prueba manuales (menú)
+### Pruebas a mano con el menú
 
-| Entrada | Resultado esperado |
-|---|---|
-| Opción `99` | "Digito Invalido" y vuelve al menú |
-| Edad `-5` o texto en lugar de número | "Valor invalido." y vuelve a pedirla |
-| Opción 7 con adoptante inexistente | "Error: No existe un adoptante con ID ..." |
-| Opción 7 con un animal ya adoptado | "Error: El animal con ID ... no esta disponible" |
-| Opción 8 con una solicitud ya confirmada | "Error: La solicitud no esta pendiente" |
-| Opción 10 con un animal disponible | "Error: El animal no estaba adoptado" |
-| Opción 3 sin animales | "No hay animales registrados" |
+- Opción `99`: muestra "Digito Invalido" y vuelve al menú.
+- Una edad negativa o texto en vez de un número: dice "Valor invalido." y la vuelve a pedir.
+- Crear una solicitud con un adoptante que no existe: muestra el error y sigue.
+- Crear una solicitud con un animal ya adoptado: dice que no está disponible.
+- Confirmar una solicitud que ya estaba confirmada: dice que no está pendiente.
+- Devolver un animal que estaba disponible: dice que no estaba adoptado.
+- Listar animales sin haber registrado ninguno: dice que no hay animales.
 
 ## Diagramas de flujo
 
-Los diagramas de flujo del menú principal y de cada opción del sistema se entregan por separado.
+En la carpeta `diagramas/` están el pseudocódigo hecho en PSeInt (`.psc`) y su diagrama de flujo (`.png`):
+
+- `menu_principal`: el menú, que se repite hasta elegir Salir. Cada opción muestra los pasos generales de lo que hace (pedir los datos, buscar, verificar, crear o mostrar el resultado).
+- `proceso_adopcion`: el proceso de adopción en detalle. Se fija si existen el adoptante y el animal y si el animal está disponible; después crea la solicitud y se confirma o se cancela.
+
+El diagrama del menú es muy ancho porque tiene las 11 opciones; también está en `menuprincipal.svg` (vectorial) para poder hacer zoom.
