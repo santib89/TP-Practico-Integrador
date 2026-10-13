@@ -133,6 +133,8 @@ make pruebas-memoria    # solo en macOS, usa "leaks" para buscar memoria sin lib
 
 `pruebas/pruebas.cpp` hace 35 verificaciones y al final dice cuántas salieron bien.
 
+Los resultados completos de las pruebas (casos válidos, errores, copia profunda, memoria y miembro estático) están en el documento `Documentacion_y_pruebas_Refugio.docx`.
+
 Casos válidos que se prueban:
 
 - Registrar perros y gatos con IDs consecutivos, buscarlos por ID y por posición, y comprobar que cada uno es del tipo correcto.
