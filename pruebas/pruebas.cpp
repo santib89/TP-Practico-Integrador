@@ -7,7 +7,7 @@
 int total = 0;
 int fallos = 0;
 
-void chequear(bool condicion, std::string texto)
+void verificar(bool condicion, std::string texto)
 {
     total++;
     if (condicion)
@@ -28,19 +28,19 @@ void pruebasValidas()
     int idPerro = r.registrarPerro("Rex", 3, "Labrador", 20.5);
     int idGato = r.registrarGato("Michi", 2, "Gris", true);
 
-    chequear(idPerro == 1 && idGato == 2, "los IDs se asignan en orden");
-    chequear(r.cantidad() == 2, "el refugio tiene 2 animales");
-    chequear(r(1)->getNombre() == "Rex", "buscar por ID con ()");
-    chequear(r(99) == nullptr, "buscar un ID que no existe devuelve nullptr");
-    chequear(r[1].getNombre() == "Michi", "acceder por posicion con []");
+    verificar(idPerro == 1 && idGato == 2, "los IDs se asignan en orden");
+    verificar(r.cantidad() == 2, "el refugio tiene 2 animales");
+    verificar(r(1)->getNombre() == "Rex", "buscar por ID con ()");
+    verificar(r(99) == nullptr, "buscar un ID que no existe devuelve nullptr");
+    verificar(r[1].getNombre() == "Michi", "acceder por posicion con []");
 
     Perro a(1, "A", 1, true, false, "X", 1.0);
     Gato b(1, "B", 2, true, false, "Y", false);
     Perro c(2, "C", 3, true, true, "Z", 2.0);
-    chequear(a == b, "== es verdadero si tienen el mismo ID, aunque sean de distinto tipo");
-    chequear(!(a == c), "== es falso si tienen distinto ID");
-    chequear(!a == false, "! es falso si el animal esta disponible");
-    chequear(!c == true, "! es verdadero si el animal ya fue adoptado");
+    verificar(a == b, "== es verdadero si tienen el mismo ID, aunque sean de distinto tipo");
+    verificar(!(a == c), "== es falso si tienen distinto ID");
+    verificar(!a == false, "! es falso si el animal esta disponible");
+    verificar(!c == true, "! es verdadero si el animal ya fue adoptado");
 }
 
 void pruebasAdopcion()
@@ -51,17 +51,17 @@ void pruebasAdopcion()
     int idAdoptante = r.registrarAdoptante("Ana", "3584001122", "Casa");
 
     int solicitud = r.crearSolicitud(idAdoptante, 1);
-    chequear(!r[0] == false, "con la solicitud pendiente el animal sigue disponible");
+    verificar(!r[0] == false, "con la solicitud pendiente el animal sigue disponible");
 
     r.confirmarSolicitud(solicitud);
-    chequear(!r[0] == true, "al confirmar, el animal queda adoptado");
+    verificar(!r[0] == true, "al confirmar, el animal queda adoptado");
 
     r.devolverAnimal(1);
-    chequear(!r[0] == false, "al devolverlo vuelve a estar disponible");
+    verificar(!r[0] == false, "al devolverlo vuelve a estar disponible");
 
     int otra = r.crearSolicitud(idAdoptante, 1);
     r.cancelarSolicitud(otra);
-    chequear(!r[0] == false, "cancelar una solicitud no cambia al animal");
+    verificar(!r[0] == false, "cancelar una solicitud no cambia al animal");
 }
 
 void pruebasErrores()
@@ -82,7 +82,7 @@ void pruebasErrores()
         atrapada = true;
     }
     delete repetido;
-    chequear(atrapada && r.cantidad() == 1, "ID repetido lanza IdRepetidoException");
+    verificar(atrapada && r.cantidad() == 1, "ID repetido lanza IdRepetidoException");
 
     atrapada = false;
     try
@@ -93,7 +93,7 @@ void pruebasErrores()
     {
         atrapada = true;
     }
-    chequear(atrapada, "indice fuera de rango lanza IndiceInvalidoException");
+    verificar(atrapada, "indice fuera de rango lanza IndiceInvalidoException");
 
     atrapada = false;
     try
@@ -104,7 +104,7 @@ void pruebasErrores()
     {
         atrapada = true;
     }
-    chequear(atrapada, "indice negativo lanza IndiceInvalidoException");
+    verificar(atrapada, "indice negativo lanza IndiceInvalidoException");
 
     int solicitud = r.crearSolicitud(idAdoptante, 1);
     r.confirmarSolicitud(solicitud);
@@ -118,7 +118,7 @@ void pruebasErrores()
     {
         atrapada = true;
     }
-    chequear(atrapada, "pedir un animal ya adoptado lanza AnimalNoDisponibleException");
+    verificar(atrapada, "pedir un animal ya adoptado lanza AnimalNoDisponibleException");
 
     atrapada = false;
     try
@@ -129,7 +129,7 @@ void pruebasErrores()
     {
         atrapada = true;
     }
-    chequear(atrapada, "adoptante que no existe lanza NoEncontradoException");
+    verificar(atrapada, "adoptante que no existe lanza NoEncontradoException");
 
     atrapada = false;
     try
@@ -140,7 +140,7 @@ void pruebasErrores()
     {
         atrapada = true;
     }
-    chequear(atrapada, "animal que no existe lanza NoEncontradoException");
+    verificar(atrapada, "animal que no existe lanza NoEncontradoException");
 
     atrapada = false;
     try
@@ -151,7 +151,7 @@ void pruebasErrores()
     {
         atrapada = true;
     }
-    chequear(atrapada, "confirmar una solicitud ya confirmada lanza OperacionInvalidaException");
+    verificar(atrapada, "confirmar una solicitud ya confirmada lanza OperacionInvalidaException");
 
     r.devolverAnimal(1);
     atrapada = false;
@@ -163,7 +163,7 @@ void pruebasErrores()
     {
         atrapada = true;
     }
-    chequear(atrapada, "devolver un animal que no estaba adoptado lanza OperacionInvalidaException");
+    verificar(atrapada, "devolver un animal que no estaba adoptado lanza OperacionInvalidaException");
 
     atrapada = false;
     try
@@ -175,7 +175,7 @@ void pruebasErrores()
     {
         atrapada = true;
     }
-    chequear(atrapada, "las excepciones tambien se pueden atrapar como ErrorRefugio");
+    verificar(atrapada, "las excepciones tambien se pueden atrapar como ErrorRefugio");
 }
 
 void pruebasCopiaProfunda()
@@ -187,25 +187,25 @@ void pruebasCopiaProfunda()
     int idAdoptante = original.registrarAdoptante("Ana", "3584001122", "Casa");
 
     Refugio copia(original);
-    chequear(copia.cantidad() == 2, "la copia tiene los mismos animales");
-    chequear(&copia[0] != &original[0], "los animales de la copia estan en otra direccion de memoria");
+    verificar(copia.cantidad() == 2, "la copia tiene los mismos animales");
+    verificar(&copia[0] != &original[0], "los animales de la copia estan en otra direccion de memoria");
 
     int solicitud = original.crearSolicitud(idAdoptante, 1);
     original.confirmarSolicitud(solicitud);
-    chequear(!original[0] == true && !copia[0] == false, "adoptar en el original no cambia la copia");
+    verificar(!original[0] == true && !copia[0] == false, "adoptar en el original no cambia la copia");
 
     copia.registrarPerro("Toby", 1, "Mestizo", 8.0);
-    chequear(original.cantidad() == 2 && copia.cantidad() == 3, "agregar a la copia no cambia el original");
+    verificar(original.cantidad() == 2 && copia.cantidad() == 3, "agregar a la copia no cambia el original");
 
     Refugio asignado;
     asignado.registrarGato("Luna", 4, "Negro", false);
     asignado = original;
-    chequear(asignado.cantidad() == 2 && asignado[0].getNombre() == "Rex", "con = queda con los animales del original");
-    chequear(&asignado[0] != &original[0], "con = tampoco se comparte la memoria");
+    verificar(asignado.cantidad() == 2 && asignado[0].getNombre() == "Rex", "con = queda con los animales del original");
+    verificar(&asignado[0] != &original[0], "con = tampoco se comparte la memoria");
 
     Refugio& mismo = asignado;
     asignado = mismo;
-    chequear(asignado.cantidad() == 2, "asignar un refugio a si mismo no lo rompe");
+    verificar(asignado.cantidad() == 2, "asignar un refugio a si mismo no lo rompe");
 }
 
 void pruebasColeccion()
@@ -221,9 +221,9 @@ void pruebasColeccion()
         }
         palabras.agregar("hola");
 
-        chequear(numeros.cantidad() == 20 && numeros[19] == 19, "Coleccion<int> crece mas alla de su capacidad inicial");
-        chequear(palabras.cantidad() == 1 && palabras[0] == "hola", "Coleccion<string> guarda y devuelve datos");
-        chequear(Coleccion<int>::cantidadInstancias() == antes + 1, "el contador estatico de int cuenta solo las de int");
+        verificar(numeros.cantidad() == 20 && numeros[19] == 19, "Coleccion<int> crece mas alla de su capacidad inicial");
+        verificar(palabras.cantidad() == 1 && palabras[0] == "hola", "Coleccion<string> guarda y devuelve datos");
+        verificar(Coleccion<int>::cantidadInstancias() == antes + 1, "el contador estatico de int cuenta solo las de int");
 
         bool atrapada = false;
         try
@@ -234,9 +234,9 @@ void pruebasColeccion()
         {
             atrapada = true;
         }
-        chequear(atrapada, "[] fuera de rango lanza IndiceInvalidoException");
+        verificar(atrapada, "[] fuera de rango lanza IndiceInvalidoException");
     }
-    chequear(Coleccion<int>::cantidadInstancias() == antes, "el contador vuelve al valor de antes al destruirlas");
+    verificar(Coleccion<int>::cantidadInstancias() == antes, "el contador vuelve al valor de antes al destruirlas");
 }
 
 void pruebaMemoria()
@@ -255,7 +255,7 @@ void pruebaMemoria()
         Refugio asignado;
         asignado = copia;
     }
-    chequear(Coleccion<Adoptante>::cantidadInstancias() == antes, "se crean, copian y destruyen refugios y no quedan colecciones vivas");
+    verificar(Coleccion<Adoptante>::cantidadInstancias() == antes, "se crean, copian y destruyen refugios y no quedan colecciones vivas");
 }
 
 int main()

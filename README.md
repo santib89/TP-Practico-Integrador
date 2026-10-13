@@ -171,4 +171,4 @@ En la carpeta `diagramas/` están el pseudocódigo hecho en PSeInt (`.psc`) y su
 - `menu_principal`: el menú, que se repite hasta elegir Salir. Cada opción muestra los pasos generales de lo que hace (pedir los datos, buscar, verificar, crear o mostrar el resultado).
 - `proceso_adopcion`: el proceso de adopción en detalle. Se fija si existen el adoptante y el animal y si el animal está disponible; después crea la solicitud y se confirma o se cancela.
 
-El diagrama del menú es muy ancho porque tiene las 11 opciones; también está en `menuprincipal.svg` (vectorial) para poder hacer zoom.
+El diagrama del menú es muy ancho porque tiene las 11 opciones; conviene abrir `menuprincipal.png` y acercar para verlo con detalle.
